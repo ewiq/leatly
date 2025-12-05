@@ -1,1 +1,74 @@
 @import 'tailwindcss';
+@font-face {
+	font-family: 'Hepta Slab';
+	src: url('/fonts/HeptaSlab-VariableFont_wght.ttf') format('truetype');
+	font-weight: 100 900; /* variable font range */
+	font-style: normal;
+	font-display: swap;
+}
+/* ----------------------------- */
+/* Atkinson Hyperlegible         */
+/* (Regular, Italic, Bold, BoldItalic) */
+/* ----------------------------- */
+@font-face {
+	font-family: 'Atkinson Hyperlegible';
+	src: url('/fonts/Atkinson_Hyperlegible/AtkinsonHyperlegible-Regular.ttf') format('truetype');
+	font-weight: 400;
+	font-style: normal;
+	font-display: swap;
+}
+
+@font-face {
+	font-family: 'Atkinson Hyperlegible';
+	src: url('/fonts/Atkinson_Hyperlegible/AtkinsonHyperlegible-Italic.ttf') format('truetype');
+	font-weight: 400;
+	font-style: italic;
+	font-display: swap;
+}
+
+@font-face {
+	font-family: 'Atkinson Hyperlegible';
+	src: url('/fonts/Atkinson_Hyperlegible/AtkinsonHyperlegible-Bold.ttf') format('truetype');
+	font-weight: 700;
+	font-style: normal;
+	font-display: swap;
+}
+
+@font-face {
+	font-family: 'Atkinson Hyperlegible';
+	src: url('/fonts/Atkinson_Hyperlegible/AtkinsonHyperlegible-BoldItalic.ttf') format('truetype');
+	font-weight: 700;
+	font-style: italic;
+	font-display: swap;
+}
+
+@custom-variant dark (&:where(.dark, .dark *));
+@theme {
+	--color-primary: #fb923c; /* Orange-400 for primary */
+	--color-muted: #e5e5e5; /* Light gray for subtle elements */
+	--color-tertiary: #94a3b8; /* Slate blue-gray, Notion-like */
+	--color-surface: #ffffff; /* Pure white for surfaces */
+	--color-accent: #333b46; /* Grayscale accent with bluish tint */
+	--color-secondary: #ffebd4; /* Light orange for highlights (orange-200) */
+	--color-content: #0f172a; /* Almost black, but softer */
+	--color-background: #f8fafc; /* Off-white background, Notion-like */
+}
+.dark {
+	--color-primary: #fb923c; /* Orange-400 for dark mode */
+	--color-muted: #334155; /* Muted slate color */
+	--color-tertiary: #64748b; /* Medium gray with blue tint */
+	--color-surface: #1e293b; /* Dark blue-gray for surfaces */
+	--color-accent: #94a3b8; /* Medium-light gray accent */
+	--color-secondary: #441809; /* Dark orange-900 */
+	--color-content: #f1f5f9; /* Off-white text */
+	--color-background: #0f172a; /* Very dark blue-gray background */
+}
+.font-hepta {
+	font-family: 'Hepta Slab', serif;
+}
+.font-sans {
+	font-family: 'Atkinson Hyperlegible', sans-serif;
+}
+.font-serif {
+	font-family: Georgia, 'Times New Roman', serif;
+}
