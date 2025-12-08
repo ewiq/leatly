@@ -73,3 +73,22 @@ export async function getAllChannels(): Promise<DBChannel[]> {
 	const db = await getDB();
 	return db.getAll('channels');
 }
+
+export async function deleteChannel(channelId: string) {
+	const db = await getDB();
+	const tx = db.transaction(['channels', 'items'], 'readwrite');
+	const channelStore = tx.objectStore('channels');
+	const itemStore = tx.objectStore('items');
+
+	await channelStore.delete(channelId);
+
+	const index = itemStore.index('by-channel');
+	let cursor = await index.openCursor(IDBKeyRange.only(channelId));
+
+	while (cursor) {
+		await cursor.delete();
+		cursor = await cursor.continue();
+	}
+
+	await tx.done;
+}

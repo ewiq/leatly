@@ -34,7 +34,7 @@
 	<div
 		data-toast
 		transition:fly={{ duration: 400, y: 150, easing: cubicInOut }}
-		class="fixed right-4 bottom-4 z-50 flex h-16 max-w-md min-w-[300px] items-center gap-3 rounded-lg border bg-background p-4 shadow-lg select-none"
+		class="fixed right-4 bottom-4 z-1000 flex h-16 max-w-md min-w-[300px] items-center gap-3 rounded-lg border bg-background p-4 shadow-lg select-none"
 		class:border-green-800={type === 'success'}
 		class:border-red-800={type === 'error'}
 	>

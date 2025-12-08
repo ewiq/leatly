@@ -1,19 +1,67 @@
 <script lang="ts">
-	import { LoaderCircle, Rss } from 'lucide-svelte';
+	import { LoaderCircle, Rss, Hash, Plus, X } from 'lucide-svelte';
 	import { tick } from 'svelte';
 	import { toastData } from '$lib/stores/toast.svelte';
 	import { settings } from '$lib/stores/settings.svelte';
-	import type { RSSFeedResponse } from '$lib/types/rss';
-	import { saveFeedToDB } from '$lib/db/db';
+	import type { DBChannel, RSSFeedResponse } from '$lib/types/rss';
+	import { saveFeedToDB, getAllChannels, deleteChannel } from '$lib/db/db';
+	import { goto, invalidate } from '$app/navigation';
 
-	let { onSubscribe, closeMenu } = $props();
+	let { onSubscribe, onChannelSelect } = $props();
 
 	let subscriptionUrl = $state('');
+	let subscribedChannels: DBChannel[] = $state([]);
+	let isDeleting = $state(false);
+
+	$effect(() => {
+		subscribedChannels;
+		loadChannels();
+	});
+
+	async function loadChannels() {
+		subscribedChannels = await getAllChannels();
+	}
+
+	async function filterByChannel(channel: DBChannel) {
+		if (!channel.title) return;
+
+		const params = new URLSearchParams();
+		params.set('feed', channel.title);
+
+		await goto(`?${params.toString()}`, {
+			noScroll: true
+		});
+
+		window.scrollTo({ top: 0, behavior: 'smooth' });
+		onChannelSelect?.();
+	}
+
+	async function handleUnsubscribe(channelId: string, event: Event) {
+		// Prevent clicking the parent button
+		event.stopPropagation();
+
+		if (!confirm('Are you sure you want to remove this channel?')) return;
+
+		isDeleting = true;
+		try {
+			await deleteChannel(channelId);
+			await loadChannels();
+			await invalidate('app:feed');
+			toastData.message = 'Channel removed';
+			toastData.type = 'success';
+		} catch (error) {
+			console.error('Failed to delete channel', error);
+			toastData.message = 'Failed to remove channel';
+			toastData.type = 'error';
+		} finally {
+			isDeleting = false;
+		}
+	}
 
 	async function subscribe() {
 		if (!subscriptionUrl.trim()) return;
 
-		settings.isLoading = true;
+		settings.isSubscriptionLoading = true;
 		toastData.message = '';
 		await tick();
 
@@ -46,48 +94,86 @@
 			toastData.message = 'An error occurred. Please try again.';
 			toastData.type = 'error';
 		} finally {
-			settings.isLoading = false;
+			settings.isSubscriptionLoading = false;
 		}
 	}
 </script>
 
-<form onsubmit={subscribe} class="mb-4">
-	<label for="subscriptionUrl" class="mb-1 block text-sm font-medium text-content">
-		<div class="flex flex-row items-center space-x-2">
-			<span> Add new channel </span>
-			<Rss class="h-4 w-4 text-primary"></Rss>
+<div class="flex h-full flex-col">
+	<div class="flex h-full grow-0 flex-col">
+		<div class="mb-1 flex items-center gap-2 text-base font-semibold text-content">
+			<Rss size={20} class="text-primary" />
+			<span>My subscriptions</span>
 		</div>
-	</label>
-	<input
-		id="subscriptionUrl"
-		type="text"
-		placeholder="https://example.com/rss"
-		bind:value={subscriptionUrl}
-		class="w-full rounded-lg border border-muted bg-background px-3
-                           py-2 text-content placeholder:text-tertiary
-                           focus:ring-2 focus:ring-primary
-                           focus:outline-none"
-	/>
-	<button
-		onclick={subscribe}
-		disabled={settings.isLoading}
-		class="mt-2 flex w-full cursor-pointer items-center justify-center rounded-lg
-                           bg-accent py-2 text-surface transition hover:bg-content disabled:hover:bg-accent"
-	>
-		{#if settings.isLoading}
-			<LoaderCircle class="h-6 w-6 animate-spin text-secondary"></LoaderCircle>
-		{:else}
-			Subscribe
-		{/if}
-	</button>
-</form>
+		<div class="border-t border-muted"></div>
+		<div class="flex max-h-60 flex-col overflow-y-auto">
+			{#each subscribedChannels as channel}
+				<div class="group flex items-center">
+					<button
+						onclick={() => filterByChannel(channel)}
+						class="flex min-w-0 grow items-center gap-2 rounded-md px-1 py-0.5 text-left text-sm text-content transition-colors group-hover:text-tertiary hover:bg-secondary hover:text-content"
+					>
+						<div
+							class="flex h-6 w-6 shrink-0 items-center justify-center rounded bg-tertiary/20 text-tertiary"
+						>
+							{#if channel.image}
+								<img
+									src={channel.image}
+									alt={channel.title}
+									class="h-full w-full rounded object-cover"
+								/>
+							{:else}
+								<Hash size={14} />
+							{/if}
+						</div>
 
-<a
-	href="/"
-	class="block w-full rounded-lg px-3 py-2 text-left text-content
-                       transition hover:bg-secondary"
-	onclick={closeMenu}
->
-	See all my subscriptions →
-</a>
-<div class="my-3 border-t border-muted"></div>
+						<span class="block min-w-0 truncate">
+							{channel.title || 'Untitled channel'}
+						</span>
+					</button>
+
+					<button
+						onclick={(e) => handleUnsubscribe(channel.link, e)}
+						disabled={isDeleting}
+						class=" ml-1 flex shrink-0 items-center justify-center rounded p-1.5 text-accent transition hover:text-tertiary"
+						aria-label="Unsubscribe"
+					>
+						<X size={20} />
+					</button>
+				</div>
+			{/each}
+		</div>
+	</div>
+
+	<div class="h-full grow"></div>
+
+	<div class="flex grow-0 flex-col space-y-2">
+		<div class="border-t border-muted"></div>
+		<div class="mb-1 flex items-center gap-2 text-base font-semibold text-content">
+			<Plus size={16} class="text-primary" />
+			<span>Add new channel</span>
+		</div>
+		<form onsubmit={subscribe}>
+			<div class="relative flex items-center">
+				<input
+					id="subscriptionUrl"
+					type="text"
+					placeholder="https://example.com/rss"
+					bind:value={subscriptionUrl}
+					class="w-full rounded-lg border border-muted bg-background px-3 py-2 text-sm text-content placeholder:text-tertiary focus:ring-2 focus:ring-primary focus:outline-none"
+				/>
+			</div>
+			<button
+				onclick={subscribe}
+				disabled={settings.isSubscriptionLoading}
+				class="mt-2 flex min-h-10 w-full cursor-pointer items-center justify-center rounded-lg bg-accent py-2 text-sm font-medium text-surface transition hover:bg-content disabled:opacity-50"
+			>
+				{#if settings.isSubscriptionLoading}
+					<LoaderCircle class="h-5 w-5 animate-spin" />
+				{:else}
+					Subscribe
+				{/if}
+			</button>
+		</form>
+	</div>
+</div>

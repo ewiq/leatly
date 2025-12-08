@@ -63,3 +63,8 @@ export interface RSSDatabase extends DBSchema {
 		indexes: { 'by-channel': string };
 	};
 }
+
+export interface UIItem extends DBItem {
+	channelTitle?: string;
+	channelImage?: string;
+}

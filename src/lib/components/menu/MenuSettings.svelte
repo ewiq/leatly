@@ -1,13 +1,20 @@
 <script lang="ts">
-	import { Settings, Moon, Sun, MoveVertical, Magnet } from 'lucide-svelte';
+	import { Settings, Moon, Sun, MoveVertical, Magnet, Hourglass, Shuffle } from 'lucide-svelte';
 	import ToggleButton from './ToggleButton.svelte';
 
 	let { isDark, isFontSerif, isSnapped, toggleDarkMode, toggleFont, toggleScrollSnap } = $props();
+
+	//Dummy for the moment
+	let isChronolicalSorting = $state(false);
+
+	function toggleSorting() {
+		isChronolicalSorting = !isChronolicalSorting;
+	}
 </script>
 
 <div class="space-y-2">
-	<div class="flex items-center gap-2 text-sm font-semibold text-content">
-		<Settings size={16} />
+	<div class="flex items-center gap-2 text-base font-semibold text-content">
+		<Settings size={16} class="text-primary" />
 		<span>Settings</span>
 	</div>
 	<!-- LIGHT-DARK TOGGLE -->
@@ -46,5 +53,19 @@
 		</div>
 
 		<ToggleButton isChecked={isSnapped} onToggle={toggleScrollSnap}></ToggleButton>
+	</div>
+	<!-- FEED SORTING TOGGLE -->
+	<div class="flex w-full items-center justify-between rounded-lg px-3">
+		<div class="flex items-center gap-2 text-content">
+			{#if isChronolicalSorting}
+				<Hourglass size={16} />
+				<span>Chronological</span>
+			{:else}
+				<Shuffle size={16} />
+				<span>Shuffle feed</span>
+			{/if}
+		</div>
+
+		<ToggleButton isChecked={isChronolicalSorting} onToggle={toggleSorting}></ToggleButton>
 	</div>
 </div>

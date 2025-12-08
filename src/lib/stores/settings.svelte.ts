@@ -2,8 +2,12 @@ export const settings = $state({
 	isDark: false,
 	isFontSerif: false,
 	isSnapped: false,
-	isLoading: false,
-	isMenuHidden: false
+	isSubscriptionLoading: false,
+	isMenuHidden: false,
+	isSubsMenuOpen: false,
+	isSettingsMenuOpen: false,
+	isSearchbarExtended: false,
+	isMobile: false
 });
 
 export function toggleDarkMode() {
@@ -58,11 +62,9 @@ function applySettings() {
 	}
 	// Apply scroll snap
 	if (settings.isSnapped) {
-		document.documentElement.classList.add('snap-y', 'snap-mandatory');
-		document.documentElement.style.scrollBehavior = 'smooth';
+		document.documentElement.classList.add('snap-y', 'snap-mandatory', 'scroll-smooth');
 	} else {
-		document.documentElement.classList.remove('snap-y', 'snap-mandatory');
-		document.documentElement.style.scrollBehavior = 'auto';
+		document.documentElement.classList.remove('snap-y', 'snap-mandatory', 'scroll-smooth');
 	}
 }
 
@@ -71,4 +73,18 @@ function persistSettings() {
 	localStorage.setItem('font', settings.isFontSerif ? 'serif' : 'sans');
 	localStorage.setItem('scrollSnap', settings.isSnapped ? 'true' : 'false');
 	applySettings();
+}
+
+export function trackDeviceState() {
+	if (typeof window === 'undefined') return () => {};
+
+	const mediaQuery = window.matchMedia('(max-width: 768px)');
+	settings.isMobile = mediaQuery.matches;
+
+	const handler = (e: MediaQueryListEvent) => {
+		settings.isMobile = e.matches;
+	};
+	mediaQuery.addEventListener('change', handler);
+
+	return () => mediaQuery.removeEventListener('change', handler);
 }
