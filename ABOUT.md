@@ -43,6 +43,7 @@
 - Daily gospel (scraped)
 - Daily art
 - Random Wikipedia articles feed
+- Reddit RSS
 
 ## Implementation Ideas
 
@@ -59,11 +60,19 @@
 
 ## TODO - Current next tasks
 
-- Modify FeedCards - add channel name
-- Add read/close functionality
-- Change feedcard size - aspect-ratio - more square-like
-- Settings: striclty date sort or randomize
+- Solve scroll-snap issues: Menu visibility and search results snapping
+- Search bar -> make sure nav back works fine
+- Enhance FeedCards - add channel name & image to top -> may need restructuring of DB schema. Change feedcard size - aspect-ratio - more square-like for large screens
+- Periodically refresh current subscriptions to look for new items - every 30mins?
+- Delete oldest items, leave max 500?
+
+- Add read/close functionality - maybe track each post with timer
+- Settings: strictly date sort or randomize
 - If random+mobile, add resort on swipe up.
 - Add subscription list button to right
 - Add keyboard navigation
-- Periodically refresh current subscriptions to look for new items
+- Save subscribed channels to a global database - Track popularity
+- Privacy notice - About page
+- Buy me a coffee
+- Enhance first landing page - easily add first rss channels
+- Add api rate limiting

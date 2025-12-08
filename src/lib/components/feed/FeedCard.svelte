@@ -1,6 +1,7 @@
 <script lang="ts">
-	import type { DBItem } from '$lib/db/db';
-	import { ExternalLink, Clock, Bookmark, CheckCircle } from 'lucide-svelte';
+	import type { DBItem } from '$lib/types/rss';
+	import { settings } from '$lib/stores/settings.svelte';
+	import { Clock, Bookmark, X } from 'lucide-svelte';
 
 	let { item }: { item: DBItem } = $props();
 
@@ -21,11 +22,11 @@
 </script>
 
 <article
-	class="mb-6 snap-start scroll-mt-24 overflow-hidden rounded-xl border border-muted bg-surface shadow-sm
-                transition hover:shadow-md"
+	class="mb-6 snap-start overflow-hidden rounded-xl border border-muted bg-surface shadow-sm
+                transition hover:shadow-md {settings.isMenuHidden ? 'scroll-mt-8' : 'scroll-mt-24'}"
 >
 	{#if item.image}
-		<div class="h-48 w-full overflow-hidden bg-muted/50">
+		<div class="w-full overflow-hidden bg-muted/50 md:h-114">
 			<img
 				src={item.image}
 				alt={item.title}
@@ -37,11 +38,10 @@
 
 	<div class="p-5">
 		<div
-			class="mb-3 flex items-center justify-between text-xs font-medium tracking-wider text-tertiary uppercase"
+			class="mb-3 flex items-center justify-between text-xs font-medium tracking-wider text-tertiary"
 		>
 			<span class="truncate pr-4">{item.author}</span>
 			<div class="flex items-center gap-1">
-				<Clock class="h-3 w-3" />
 				<span>{timeAgo(item.pubDate)}</span>
 			</div>
 		</div>
@@ -60,15 +60,9 @@
 			<div class="flex gap-2">
 				<button
 					class="rounded-full p-2 text-tertiary transition hover:bg-muted hover:text-primary"
-					title="Mark as Read"
-				>
-					<CheckCircle class="h-5 w-5" />
-				</button>
-				<button
-					class="rounded-full p-2 text-tertiary transition hover:bg-muted hover:text-primary"
 					title="Save to Favorites"
 				>
-					<Bookmark class="h-5 w-5" />
+					<Bookmark class="h-6 w-6" />
 				</button>
 			</div>
 
@@ -76,10 +70,9 @@
 				href={item.link}
 				target="_blank"
 				rel="noopener noreferrer"
-				class="flex items-center gap-1 rounded-lg bg-secondary/50 px-3 py-1.5 text-sm font-medium text-content transition hover:bg-secondary"
+				class="flex items-center gap-1 rounded-full bg-secondary/50 p-3 text-sm font-medium text-content transition hover:bg-secondary"
 			>
-				Read
-				<ExternalLink class="h-3 w-3" />
+				<X class="h-4 w-4" />
 			</a>
 		</div>
 	</div>

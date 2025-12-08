@@ -2,7 +2,8 @@ export const settings = $state({
 	isDark: false,
 	isFontSerif: false,
 	isSnapped: false,
-	isLoading: false
+	isLoading: false,
+	isMenuHidden: false
 });
 
 export function toggleDarkMode() {

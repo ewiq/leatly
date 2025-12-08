@@ -1,3 +1,5 @@
+import type { DBSchema } from 'idb';
+
 export interface NormalizedRSSChannel {
 	title: string;
 	description: string;
@@ -36,3 +38,28 @@ export interface RSSFeedErrorResponse {
 }
 
 export type RSSFeedResponse = RSSFeedSuccessResponse | RSSFeedErrorResponse;
+
+export interface DBChannel extends NormalizedRSSChannel {
+	savedAt: number;
+}
+
+export interface DBItem extends NormalizedRSSItem {
+	id: string;
+	channelId: string;
+	savedAt: number;
+	read: boolean;
+	closed: boolean;
+	favourite: boolean;
+}
+
+export interface RSSDatabase extends DBSchema {
+	channels: {
+		key: string;
+		value: DBChannel;
+	};
+	items: {
+		key: string;
+		value: DBItem;
+		indexes: { 'by-channel': string };
+	};
+}

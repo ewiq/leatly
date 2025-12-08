@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { LoaderCircle } from 'lucide-svelte';
+	import { LoaderCircle, Rss } from 'lucide-svelte';
 	import { tick } from 'svelte';
 	import { toastData } from '$lib/stores/toast.svelte';
 	import { settings } from '$lib/stores/settings.svelte';
@@ -51,9 +51,15 @@
 	}
 </script>
 
-<div class="mb-4">
-	<label class="mb-1 block text-sm font-medium text-content">Add new RSS channel</label>
+<form onsubmit={subscribe} class="mb-4">
+	<label for="subscriptionUrl" class="mb-1 block text-sm font-medium text-content">
+		<div class="flex flex-row items-center space-x-2">
+			<span> Add new channel </span>
+			<Rss class="h-4 w-4 text-primary"></Rss>
+		</div>
+	</label>
 	<input
+		id="subscriptionUrl"
 		type="text"
 		placeholder="https://example.com/rss"
 		bind:value={subscriptionUrl}
@@ -74,7 +80,7 @@
 			Subscribe
 		{/if}
 	</button>
-</div>
+</form>
 
 <a
 	href="/"

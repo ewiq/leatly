@@ -1,30 +1,5 @@
-import { openDB, type DBSchema, type IDBPDatabase } from 'idb';
-import type { NormalizedRSSFeed, NormalizedRSSItem, NormalizedRSSChannel } from '$lib/types/rss';
-
-export interface DBChannel extends NormalizedRSSChannel {
-	savedAt: number;
-}
-
-export interface DBItem extends NormalizedRSSItem {
-	id: string;
-	channelId: string;
-	savedAt: number;
-	read: boolean;
-	closed: boolean;
-	favourite: boolean;
-}
-
-interface RSSDatabase extends DBSchema {
-	channels: {
-		key: string;
-		value: DBChannel;
-	};
-	items: {
-		key: string;
-		value: DBItem;
-		indexes: { 'by-channel': string };
-	};
-}
+import { openDB, type IDBPDatabase } from 'idb';
+import type { DBChannel, DBItem, NormalizedRSSFeed, RSSDatabase } from '$lib/types/rss';
 
 const DB_NAME = 'rss-reader-db';
 const DB_VERSION = 1;
@@ -92,4 +67,9 @@ export async function saveFeedToDB(feed: NormalizedRSSFeed) {
 export async function getAllItems(): Promise<DBItem[]> {
 	const db = await getDB();
 	return db.getAll('items');
+}
+
+export async function getAllChannels(): Promise<DBChannel[]> {
+	const db = await getDB();
+	return db.getAll('channels');
 }

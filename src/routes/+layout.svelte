@@ -9,7 +9,7 @@
 
 <svelte:head>
 	<link rel="icon" href={favicon} />
-	<title>neetlet</title>
+	<title>leaklet</title>
 </svelte:head>
 
 <main class="min-h-screen bg-background">

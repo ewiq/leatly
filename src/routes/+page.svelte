@@ -1,16 +1,42 @@
 <script lang="ts">
 	import Menu from '$lib/components/menu/Menu.svelte';
 	import FeedCard from '$lib/components/feed/FeedCard.svelte';
-	import { getAllItems, type DBItem } from '$lib/db/db';
-	import { LoaderCircle } from 'lucide-svelte';
+	import Searchbar from '$lib/components/Searchbar.svelte';
+	import { getAllItems } from '$lib/db/db';
+	import { LoaderCircle, Search } from 'lucide-svelte';
+	import type { DBItem } from '$lib/types/rss';
+	import { searchItem } from '$lib/utils/searchUtils';
+	import { goto } from '$app/navigation';
+	import { page } from '$app/stores';
+	import { slide } from 'svelte/transition';
 
 	let allItems: DBItem[] = $state([]);
 	let visibleItems: DBItem[] = $state([]);
 	let isLoading = $state(true);
 
+	let searchInput = $state('');
+	let activeSearchQuery = $state('');
+
 	let itemsPerPage = 10;
 	let observer: IntersectionObserver;
 	let loadTrigger: HTMLElement | undefined = $state();
+
+	// Get search query from URL
+	const urlParams = $page.url.searchParams;
+	const urlSearchQuery = urlParams.get('q') || '';
+
+	$effect(() => {
+		// Initialize search from URL if present
+		if (urlSearchQuery) {
+			searchInput = urlSearchQuery;
+			activeSearchQuery = urlSearchQuery;
+		}
+	});
+
+	let filteredItems = $derived.by(() => {
+		if (!activeSearchQuery.trim()) return allItems;
+		return allItems.filter((item) => searchItem(item, activeSearchQuery));
+	});
 
 	async function loadFeed() {
 		isLoading = true;
@@ -22,17 +48,53 @@
 				return dateB - dateA;
 			});
 
-			visibleItems = allItems.slice(0, itemsPerPage);
+			resetPagination();
 		} finally {
 			isLoading = false;
 		}
 	}
 
-	function loadMore() {
-		if (visibleItems.length >= allItems.length) return;
+	function resetPagination() {
+		visibleItems = filteredItems.slice(0, itemsPerPage);
+		window.scrollTo({ top: 0, behavior: 'smooth' });
+	}
 
-		const nextBatch = allItems.slice(visibleItems.length, visibleItems.length + itemsPerPage);
+	function loadMore() {
+		if (visibleItems.length >= filteredItems.length) return;
+		const nextBatch = filteredItems.slice(visibleItems.length, visibleItems.length + itemsPerPage);
 		visibleItems = [...visibleItems, ...nextBatch];
+	}
+
+	async function handleSearch() {
+		activeSearchQuery = searchInput;
+
+		// Update URL with search query
+		const params = new URLSearchParams();
+		if (searchInput.trim()) {
+			params.set('q', searchInput.trim());
+		}
+
+		await goto(`?${params.toString()}`, {
+			replaceState: true,
+			keepFocus: true,
+			noScroll: true
+		});
+
+		resetPagination();
+	}
+
+	async function clearSearch() {
+		searchInput = '';
+		activeSearchQuery = '';
+
+		// Clear search from URL
+		await goto('?', {
+			replaceState: true,
+			keepFocus: true,
+			noScroll: true
+		});
+
+		resetPagination();
 	}
 
 	$effect(() => {
@@ -47,7 +109,6 @@
 				},
 				{ rootMargin: '200px' }
 			);
-
 			observer.observe(loadTrigger);
 		}
 
@@ -56,8 +117,12 @@
 		};
 	});
 
-	// 4. Handle New Subscriptions
-	// We re-load the whole feed to mix in the new items in correct date order
+	$effect(() => {
+		if (visibleItems.length === 0 && filteredItems.length > 0) {
+			resetPagination();
+		}
+	});
+
 	function handleNewSubscription() {
 		loadFeed();
 	}
@@ -76,6 +141,39 @@
 			<p class="text-tertiary">Subscribe to an RSS channel.</p>
 		</div>
 	{:else}
+		{#if activeSearchQuery}
+			<div class="snap-start scroll-mt-32">
+				<div
+					transition:slide={{ duration: 200 }}
+					class="mb-4 flex items-center justify-between px-2"
+				>
+					<p class="text-sm text-tertiary">
+						<span class="text-primary">{filteredItems.length}</span> Search results for "<span
+							class="font-medium text-content">{activeSearchQuery}</span
+						>"
+					</p>
+					{#if filteredItems.length !== 0}
+						<button
+							onclick={clearSearch}
+							class="cursor-pointer text-sm text-primary hover:underline"
+						>
+							Clear search
+						</button>
+					{/if}
+				</div>
+			</div>
+
+			{#if filteredItems.length === 0}
+				<div class="flex flex-col items-center justify-center py-20 text-center">
+					<Search class="mb-4 h-12 w-12 text-tertiary/50" />
+					<p class="text-lg text-content">No results found for "{activeSearchQuery}"</p>
+					<button onclick={clearSearch} class="mt-2 cursor-pointer text-primary hover:underline">
+						Clear search
+					</button>
+				</div>
+			{/if}
+		{/if}
+
 		<div class="flex flex-col gap-4">
 			{#each visibleItems as item (item.id)}
 				<FeedCard {item} />
@@ -83,11 +181,15 @@
 		</div>
 
 		<div bind:this={loadTrigger} class="flex h-20 items-center justify-center py-8">
-			{#if visibleItems.length < allItems.length}
-				<LoaderCircle class="h-6 w-6 animate-spin text-tertiary" />
+			{#if visibleItems.length < filteredItems.length}
+				<!-- <LoaderCircle class="h-6 w-6 animate-spin text-tertiary" /> -->
 			{:else if visibleItems.length > 0}
-				<span class="text-sm text-tertiary">You're all caught up!</span>
+				<span class="text-sm text-tertiary">
+					{activeSearchQuery ? '' : "You're all caught up!"}
+				</span>
 			{/if}
 		</div>
 	{/if}
 </main>
+
+<Searchbar bind:value={searchInput} onSearch={handleSearch} onClear={clearSearch} />
