@@ -2,7 +2,14 @@
 	import { Settings, Moon, Sun, MoveVertical, Magnet, Hourglass, Shuffle } from 'lucide-svelte';
 	import ToggleButton from './ToggleButton.svelte';
 
-	let { isDark, isFontSerif, isSnapped, toggleDarkMode, toggleFont, toggleScrollSnap } = $props();
+	import {
+		settings,
+		toggleDarkMode,
+		toggleFont,
+		toggleScrollSnap
+	} from '$lib/stores/settings.svelte';
+
+	let { isDark, isFontSerif, isSnapped } = $props();
 
 	//Dummy for the moment
 	let isChronolicalSorting = $state(false);

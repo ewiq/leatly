@@ -60,6 +60,8 @@
 
 ## TODO - Current next tasks
 
+- UI bug causes the main menu to close but subs menu to remain open -> app is blocked. This could be solved if
+  the keyboard would cause the view height to change and wouldn't scroll downwards(? - although srolling down wards doesn't close menu on mobile?)
 - If feed already exists -> Appropriate toast message
 
 - Implement youtube rss img recognition

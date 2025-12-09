@@ -1,33 +1,11 @@
 <script lang="ts">
 	import type { UIItem } from '$lib/types/rss';
-	import { settings } from '$lib/stores/settings.svelte';
 	import { Bookmark, X } from 'lucide-svelte';
+	import { timeAgo } from '$lib/utils/dateUtils';
+	import { extractDomain } from '$lib/utils/uiUtils';
+	import { menuState } from '$lib/stores/menu.svelte';
 
 	let { item }: { item: UIItem } = $props();
-	function timeAgo(dateString: string | undefined) {
-		if (!dateString) return '';
-		const date = new Date(dateString);
-		const now = new Date();
-		const seconds = Math.floor((now.getTime() - date.getTime()) / 1000);
-		if (seconds < 3600) return `${Math.floor(seconds / 60)}m`;
-		if (seconds < 86400) return `${Math.floor(seconds / 3600)}h`;
-		return date.toLocaleDateString();
-	}
-
-	function extractDomain(url: string): string {
-		try {
-			const urlObj = new URL(url);
-			let hostname = urlObj.hostname;
-
-			if (hostname.startsWith('www.')) {
-				hostname = hostname.substring(4);
-			}
-
-			return hostname;
-		} catch {
-			return '';
-		}
-	}
 
 	let cleanDescription = $derived.by(() => {
 		const doc = new DOMParser().parseFromString(item.description, 'text/html');
@@ -38,7 +16,7 @@
 </script>
 
 <article
-	class="flex max-h-[85vh] snap-start flex-col overflow-hidden rounded-xl border border-muted bg-surface shadow-sm transition lg:max-h-[70vh] {settings.isMenuHidden
+	class="flex max-h-[85vh] snap-start flex-col overflow-hidden rounded-xl border border-muted bg-surface shadow-sm transition lg:max-h-[70vh] {menuState.isMenuHidden
 		? 'scroll-mt-2'
 		: 'scroll-mt-20'}"
 >

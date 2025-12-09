@@ -1,15 +1,15 @@
 <script lang="ts">
-	import Menu from '$lib/components/menu/Menu.svelte';
 	import FeedCard from '$lib/components/feed/FeedCard.svelte';
 	import Searchbar from '$lib/components/searchbar/Searchbar.svelte';
 	import { LoaderCircle, Search } from 'lucide-svelte';
 	import type { UIItem } from '$lib/types/rss';
 	import { searchItem } from '$lib/utils/searchUtils';
-	import { goto, invalidate } from '$app/navigation';
+	import { goto } from '$app/navigation';
 	import { slide } from 'svelte/transition';
 	import type { PageData } from './$types';
 	import { page } from '$app/state';
 	import { settings } from '$lib/stores/settings.svelte';
+	import { menuState } from '$lib/stores/menu.svelte';
 
 	let { data }: { data: PageData } = $props();
 
@@ -81,7 +81,7 @@
 		window.scrollTo({ top: 0, behavior: 'smooth' });
 
 		if (settings.isMobile) {
-			settings.isSubsMenuOpen = false;
+			menuState.isSubsMenuOpen = false;
 		}
 	}
 

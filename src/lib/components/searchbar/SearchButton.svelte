@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { settings } from '$lib/stores/settings.svelte';
+	import { searchbarState } from '$lib/stores/searchbar.svelte';
 	import { Command, Search } from 'lucide-svelte';
 	import { fade } from 'svelte/transition';
 
@@ -9,15 +9,11 @@
 		typeof window !== 'undefined' &&
 			/(Mac|iPhone|iPod|iPad)/i.test(navigator.platform || navigator.userAgent)
 	);
-
-	export function toggleSearch() {
-		settings.isSearchbarExtended = !settings.isSearchbarExtended;
-	}
 </script>
 
 <div class="z-50 md:fixed md:right-4 md:bottom-4" in:fade={{ duration: 150 }}>
 	<button
-		onclick={toggleSearch}
+		onclick={() => searchbarState.toggleSearchbar()}
 		class="group flex h-10 w-10 cursor-pointer items-center justify-center rounded-full border border-muted bg-surface text-content shadow transition hover:bg-secondary md:w-auto md:min-w-10 md:space-x-2 md:px-3"
 		aria-label="Open Search"
 	>

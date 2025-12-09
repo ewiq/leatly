@@ -3,6 +3,8 @@
 	import { fly } from 'svelte/transition';
 	import { settings } from '$lib/stores/settings.svelte';
 	import SearchButton from './SearchButton.svelte';
+	import { handleBlur, handleFocus } from '$lib/utils/uiUtils';
+	import { searchbarState } from '$lib/stores/searchbar.svelte';
 
 	let { value = $bindable(), onSearch } = $props<{
 		value: string;
@@ -12,24 +14,16 @@
 	let inputRef: HTMLInputElement | undefined = $state();
 
 	$effect(() => {
-		if (!settings.isMobile && settings.isSearchbarExtended && inputRef) {
+		if (!settings.isMobile && searchbarState.isSearchbarOpen && inputRef) {
 			setTimeout(() => inputRef?.focus(), 0);
 		}
 	});
 
 	function handleClear() {
 		value = '';
-		if (settings.isSearchbarExtended && !settings.isMobile) {
+		if (searchbarState.isSearchbarOpen && !settings.isMobile) {
 			inputRef?.focus();
 		}
-	}
-
-	function closeBar() {
-		settings.isSearchbarExtended = false;
-	}
-
-	function toggleSearch() {
-		settings.isSearchbarExtended = !settings.isSearchbarExtended;
 	}
 
 	function handleSubmit(e: Event) {
@@ -37,28 +31,13 @@
 		onSearch?.();
 		setTimeout(() => inputRef?.blur(), 100);
 	}
-
-	function handleKeydown(e: KeyboardEvent) {
-		if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
-			e.preventDefault();
-			toggleSearch();
-			return;
-		}
-
-		// Handle Escape for closing
-		if (e.key === 'Escape' && settings.isSearchbarExtended) {
-			closeBar();
-		}
-	}
 </script>
 
-<svelte:window onkeydown={handleKeydown} />
-
-{#if !settings.isSearchbarExtended}
+{#if !searchbarState.isSearchbarOpen}
 	<SearchButton bind:inputRef></SearchButton>
 {/if}
 
-{#if settings.isSearchbarExtended}
+{#if searchbarState.isSearchbarOpen}
 	<div
 		class="fixed right-0 bottom-0 left-0 {settings.isMobile
 			? 'z-300'
@@ -67,7 +46,7 @@
 	>
 		<div class="mx-auto flex max-w-2xl items-center gap-3 px-4">
 			<button
-				onclick={closeBar}
+				onclick={() => searchbarState.closeBar()}
 				class="cursor-pointer rounded-full p-2 text-accent transition-colors hover:text-tertiary"
 				aria-label="Close search"
 			>
@@ -80,6 +59,8 @@
 					</div>
 					<input
 						bind:this={inputRef}
+						onfocus={handleFocus}
+						onblur={handleBlur}
 						type="text"
 						bind:value
 						placeholder="Search..."

@@ -2,12 +2,8 @@ export const settings = $state({
 	isDark: false,
 	isFontSerif: false,
 	isSnapped: false,
-	isSubscriptionLoading: false,
-	isMenuHidden: false,
-	isSubsMenuOpen: false,
-	isSettingsMenuOpen: false,
-	isSearchbarExtended: false,
-	isMobile: false
+	isMobile: false,
+	isScrollLocked: false
 });
 
 export function toggleDarkMode() {
@@ -75,18 +71,4 @@ function persistSettings() {
 	localStorage.setItem('font', settings.isFontSerif ? 'serif' : 'sans');
 	localStorage.setItem('scrollSnap', settings.isSnapped ? 'true' : 'false');
 	applySettings();
-}
-
-export function trackDeviceState() {
-	if (typeof window === 'undefined') return () => {};
-
-	const mediaQuery = window.matchMedia('(max-width: 768px)');
-	settings.isMobile = mediaQuery.matches;
-
-	const handler = (e: MediaQueryListEvent) => {
-		settings.isMobile = e.matches;
-	};
-	mediaQuery.addEventListener('change', handler);
-
-	return () => mediaQuery.removeEventListener('change', handler);
 }
