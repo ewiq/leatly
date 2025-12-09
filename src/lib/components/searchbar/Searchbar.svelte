@@ -19,7 +19,7 @@
 
 	function handleClear() {
 		value = '';
-		if (settings.isSearchbarExtended) {
+		if (settings.isSearchbarExtended && !settings.isMobile) {
 			inputRef?.focus();
 		}
 	}

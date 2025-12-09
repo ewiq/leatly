@@ -1,11 +1,12 @@
 <script lang="ts">
-	import { LoaderCircle, Rss, Hash, Plus, X } from 'lucide-svelte';
+	import { LoaderCircle, Rss, Hash, Plus, X, Search } from 'lucide-svelte';
 	import { tick } from 'svelte';
 	import { toastData } from '$lib/stores/toast.svelte';
 	import { settings } from '$lib/stores/settings.svelte';
 	import type { DBChannel, RSSFeedResponse } from '$lib/types/rss';
 	import { saveFeedToDB, getAllChannels, deleteChannel } from '$lib/db/db';
 	import { goto, invalidate } from '$app/navigation';
+	import { normalizeText } from '$lib/utils/searchUtils';
 
 	let { onSubscribe, onChannelSelect } = $props();
 
@@ -13,9 +14,17 @@
 	let subscribedChannels: DBChannel[] = $state([]);
 	let isDeleting = $state(false);
 
+	let filterText = $state('');
+	let filteredChannels = $derived(
+		subscribedChannels.filter((c) =>
+			normalizeText(c.title)?.toLowerCase().includes(normalizeText(filterText).toLowerCase())
+		)
+	);
+
 	$effect(() => {
 		subscribedChannels;
 		loadChannels();
+		filterText;
 	});
 
 	async function loadChannels() {
@@ -101,17 +110,46 @@
 
 <div class="flex h-full flex-col">
 	<div class="flex h-full grow-0 flex-col">
-		<div class="mb-1 flex items-center gap-2 text-base font-semibold text-content">
-			<Rss size={20} class="text-primary" />
-			<span>My subscriptions</span>
+		<div class="space-between mb-1 flex items-center gap-2 text-base font-semibold text-content">
+			<div class="flex shrink-0 items-center gap-2">
+				<div class="flex h-6 w-6 shrink-0 items-center justify-center rounded text-tertiary">
+					<Rss size={20} class="text-primary" />
+				</div>
+				<span>My subscriptions</span>
+			</div>
+
+			<div class="relative flex-1">
+				<div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+					<Search class="h-4 w-4 text-tertiary" />
+				</div>
+
+				<input
+					type="text"
+					bind:value={filterText}
+					class="p w-full rounded-lg border border-muted bg-background py-2 pr-8 pl-8
+                   text-sm font-light text-content placeholder:text-tertiary
+                   focus:ring-2 focus:ring-primary focus:outline-none"
+				/>
+
+				{#if filterText}
+					<button
+						type="button"
+						onclick={() => (filterText = '')}
+						class="absolute inset-y-0 right-0 my-1 flex items-center rounded-full p-2 text-tertiary hover:text-content"
+						aria-label="Clear search"
+					>
+						<X class="h-4 w-4" />
+					</button>
+				{/if}
+			</div>
 		</div>
 		<div class="border-t border-muted"></div>
 		<div class="flex max-h-60 flex-col overflow-y-auto">
-			{#each subscribedChannels as channel}
+			{#each filteredChannels as channel}
 				<div class="group flex items-center">
 					<button
 						onclick={() => filterByChannel(channel)}
-						class="flex min-w-0 grow items-center gap-2 rounded-md px-1 py-0.5 text-left text-sm text-content transition-colors group-hover:text-tertiary hover:bg-secondary hover:text-content"
+						class="flex min-w-0 grow items-center gap-2 rounded-md py-0.5 text-left text-sm text-content transition-colors group-hover:text-tertiary hover:bg-secondary hover:text-content"
 					>
 						<div
 							class="flex h-6 w-6 shrink-0 items-center justify-center rounded bg-tertiary/20 text-tertiary"
@@ -150,7 +188,9 @@
 	<div class="flex grow-0 flex-col space-y-2">
 		<div class="border-t border-muted"></div>
 		<div class="mb-1 flex items-center gap-2 text-base font-semibold text-content">
-			<Plus size={16} class="text-primary" />
+			<div class="flex h-6 w-6 shrink-0 items-center justify-center rounded text-tertiary">
+				<Plus size={20} class="text-primary" />
+			</div>
 			<span>Add new channel</span>
 		</div>
 		<form onsubmit={subscribe}>

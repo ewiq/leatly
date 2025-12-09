@@ -30,8 +30,10 @@ export function initializeSettings() {
 	const savedFont = localStorage.getItem('font');
 	const savedScrollSnap = localStorage.getItem('scrollSnap');
 
-	if (savedTheme === 'dark') {
-		settings.isDark = true;
+	if (savedTheme) {
+		settings.isDark = savedTheme === 'dark';
+	} else {
+		settings.isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
 	}
 
 	if (savedFont === 'serif') {

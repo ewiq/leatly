@@ -92,14 +92,7 @@
 			noScroll: true
 		});
 	}
-
-	async function handleNewSubscription() {
-		// Invalidate the load function to refetch data
-		await invalidate('app:feed');
-	}
 </script>
-
-<Menu onSubscribe={handleNewSubscription} />
 
 <main class="mx-auto max-w-2xl p-4 pb-32">
 	{#if data.items.length === 0}
@@ -133,7 +126,9 @@
 			{#if filteredItems.length === 0}
 				<div class="flex flex-col items-center justify-center py-20 text-center">
 					<Search class="mb-4 h-12 w-12 text-tertiary/50" />
-					<p class="text-lg text-content">No results found for "{data.searchQuery}"</p>
+					<p class="text-lg text-content">
+						No results found for "{data.searchQuery || feedFilter}"
+					</p>
 					<button onclick={clearSearch} class="mt-2 cursor-pointer text-primary hover:underline">
 						Clear search
 					</button>

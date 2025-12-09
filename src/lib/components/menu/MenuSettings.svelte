@@ -14,12 +14,14 @@
 
 <div class="space-y-2">
 	<div class="flex items-center gap-2 text-base font-semibold text-content">
-		<Settings size={16} class="text-primary" />
+		<div class="flex h-6 w-6 shrink-0 items-center justify-center rounded text-tertiary">
+			<Settings size={20} class="text-primary" />
+		</div>
 		<span>Settings</span>
 	</div>
 	<!-- LIGHT-DARK TOGGLE -->
 	<div class="flex w-full items-center justify-between rounded-lg px-3">
-		<div class="flex items-center gap-2 text-content">
+		<div class="flex items-center gap-2 text-sm text-content">
 			{#if isDark}
 				<Moon size={16} />
 				<span>Dark</span>
@@ -33,7 +35,7 @@
 	</div>
 	<!-- FONT TOGGLE -->
 	<div class="mt-1 flex w-full items-center justify-between rounded-lg px-3">
-		<div class="flex items-center gap-2 text-content">
+		<div class="flex items-center gap-2 text-sm text-content">
 			<span class="select-none {isFontSerif ? 'font-serif' : 'font-sans'} text-lg">A</span>
 			<span>{isFontSerif ? 'Serif' : 'Sans serif'}</span>
 		</div>
@@ -42,7 +44,7 @@
 	</div>
 	<!-- SCROLL SNAP TOGGLE -->
 	<div class="flex w-full items-center justify-between rounded-lg px-3">
-		<div class="flex items-center gap-2 text-content">
+		<div class="flex items-center gap-2 text-sm text-content">
 			{#if isSnapped}
 				<Magnet size={16} />
 				<span>Snap scroll</span>
@@ -55,7 +57,7 @@
 		<ToggleButton isChecked={isSnapped} onToggle={toggleScrollSnap}></ToggleButton>
 	</div>
 	<!-- FEED SORTING TOGGLE -->
-	<div class="flex w-full items-center justify-between rounded-lg px-3">
+	<div class="flex w-full items-center justify-between rounded-lg px-3 text-sm">
 		<div class="flex items-center gap-2 text-content">
 			{#if isChronolicalSorting}
 				<Hourglass size={16} />

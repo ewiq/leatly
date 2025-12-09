@@ -29,14 +29,6 @@
 
 	let dateTime = $derived(formatDateTime(currentTime));
 
-	$effect(() => {
-		initializeSettings();
-
-		const cleanup = trackDeviceState();
-
-		return cleanup;
-	});
-
 	function handleScroll() {
 		const currentScrollY = window.scrollY;
 		if (currentScrollY < 0) return;
@@ -46,9 +38,9 @@
 				settings.isMenuHidden = true;
 				settings.isSettingsMenuOpen = false;
 
-				if (settings.isMobile) {
-					settings.isSubsMenuOpen = false;
-				}
+				// if (settings.isMobile) {
+				// 	settings.isSubsMenuOpen = false;
+				// }
 			} else {
 				settings.isMenuHidden = false;
 			}
@@ -119,6 +111,23 @@
 			window.removeEventListener('scroll', handleScroll);
 		};
 	});
+
+	$effect(() => {
+		if (settings.isMobile && settings.isSubsMenuOpen) {
+			document.body.style.overflow = 'hidden';
+			document.body.style.touchAction = 'none';
+			// Make sure menu remains opens
+			settings.isMenuHidden = false;
+		} else {
+			document.body.style.overflow = '';
+			document.body.style.touchAction = '';
+		}
+
+		return () => {
+			document.body.style.overflow = '';
+			document.body.style.touchAction = '';
+		};
+	});
 </script>
 
 <nav
@@ -149,7 +158,7 @@
 					transition:slide={{ duration: 300 }}
 					class="absolute top-full -left-4 z-60 mt-4 {settings.isMenuHidden
 						? 'h-[calc(100dvh)]'
-						: 'h-[calc(100dvh-4.5rem)]'} w-screen border-t border-muted bg-surface px-4 py-4 shadow-lg transition-[height] duration-300 md:-left-8 md:w-[35vw] md:pl-8 xl:w-2/3"
+						: 'h-[calc(100dvh-4.5rem)]'} w-screen overflow-y-auto bg-surface px-4 py-2 shadow-lg transition-[height] duration-300 md:-left-8 md:w-[35vw] md:pl-8 xl:w-2/3"
 					role="menu"
 				>
 					<MenuSubscriptions

@@ -60,13 +60,15 @@
 
 ## TODO - Current next tasks
 
-- Implement periodical feed update -> and delete older ones - leave max 500 (?)
+- If feed already exists -> Appropriate toast message
 
-- Search filter for subscriptions and solve scroll of large rss collections - separate yt/podcast?
+- Implement youtube rss img recognition
+- Implement periodical feed update -> and delete older ones (30 day/10k items cap )
+- Search filter for subscriptions and scroll of large rss lists - separate yt/podcast?
 - Add read/close functionality - maybe track each post with timer
 - If random+mobile, new shuffle on swipe up.
 - If scrolled down (and no special search or feed query), only scroll to top on navigation to previous (like social media pages) -> And shuffle if allowed in settings
-- Add keyboard navigation
+- Add keyboard navigation between posts
 - Save subscribed channels to a global database - Track popularity
 - Privacy notice - About page
 - Buy me a coffee
@@ -74,16 +76,17 @@
 - Add api rate limiting
 - Solve scroll-snap issues: Menu visibility and search results snapping
 
-- Share my collection to friends button
+- Create sharable link to import RSS collection (D1 db). Handle slow import in UI. Load list of channels, and then let user select/customize channel list before import
 - Add OPML compatibility
 - Reorder/Categorize subscriptions (?)
 - Enhance "looks like you're new here landing page.
 - Settings: strictly date sort or randomize
-- Add error 404 page
 - If sharable link - first initialization will probably take a long time - welcome and waiting page for that
 
-### Shuffle algorithm
+### Shuffle algorithm ideas
 
 Shouldn't be totally random. Fresher contents still at the top. Limit how many consecutive from same channel - Burst suppression” (limit n items per source within X items).
-Prevent 'loud sources' to spam the feed. Round-robin between sources.
+Prevent 'loud sources' to spam the feed. Consider 'slower' feeds. Round-robin between sources.
 Varying between item types (when videos, podcasts will be implemented).
+When showing items that were previously displayed, consider 'timesDisplayed' or 'msDisplayed' when sorting
+Precompute shuffle key for a few 1000 items in the working set.
