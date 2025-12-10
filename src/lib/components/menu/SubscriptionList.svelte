@@ -6,18 +6,38 @@
 	import { toastData } from '$lib/stores/toast.svelte';
 	import type { DBChannel } from '$lib/types/rss';
 	import { normalizeText } from '$lib/utils/searchUtils';
-	import { HashIcon, Rss, Search, X } from 'lucide-svelte';
+	import {
+		ArrowDownAZ,
+		ArrowDownZA,
+		ClockArrowDown,
+		HashIcon,
+		Rss,
+		Search,
+		X
+	} from 'lucide-svelte';
 
 	let isDeleting = $state(false);
 	let filterText = $state('');
+	let sortMode = $state<'a_z' | 'z_a' | 'date'>('a_z');
 
 	let subscribedChannels: DBChannel[] = $state([]);
 
-	let filteredChannels = $derived(
-		subscribedChannels.filter((c) =>
+	let filteredChannels = $derived.by(() => {
+		let list = [...subscribedChannels];
+
+		list = list.filter((c) =>
 			normalizeText(c.title)?.toLowerCase().includes(normalizeText(filterText).toLowerCase())
-		)
-	);
+		);
+
+		if (sortMode === 'a_z') {
+			list.sort((a, b) => a.title.localeCompare(b.title));
+		} else if (sortMode === 'z_a') {
+			list.sort((a, b) => b.title.localeCompare(a.title));
+		} else if (sortMode === 'date') {
+			list.sort((a, b) => b.savedAt - a.savedAt);
+		}
+		return list;
+	});
 
 	async function loadChannels() {
 		subscribedChannels = await getAllChannels();
@@ -67,14 +87,14 @@
 </script>
 
 <div class="flex h-full flex-col">
-	<div class="space-between mb-2 flex items-center gap-2 text-base font-semibold text-content">
+	<div class="space-between mb-2 flex items-center text-base font-semibold text-content">
 		<div class="flex shrink-0 items-center gap-2">
 			<div class="flex h-6 w-6 shrink-0 items-center justify-center rounded text-tertiary">
 				<Rss size={20} class="text-primary" />
 			</div>
 		</div>
 
-		<div class="relative ml-2 flex-1">
+		<div class="relative mx-2 flex-1 flex-row">
 			<div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
 				<Search class="h-4 w-4 text-tertiary" />
 			</div>
@@ -98,6 +118,28 @@
 				</button>
 			{/if}
 		</div>
+
+		<button
+			onclick={() => {
+				if (sortMode === 'a_z') {
+					sortMode = 'z_a';
+				} else if (sortMode === 'z_a') {
+					sortMode = 'date';
+				} else {
+					sortMode = 'a_z';
+				}
+			}}
+			class="flex cursor-pointer items-center rounded-full p-2 text-content transition hover:text-tertiary"
+			title="Sort"
+		>
+			{#if sortMode === 'a_z'}
+				<ArrowDownAZ size={20} />
+			{:else if sortMode === 'z_a'}
+				<ArrowDownZA size={20} />
+			{:else if sortMode === 'date'}
+				<ClockArrowDown size={20} />
+			{/if}
+		</button>
 	</div>
 
 	<div class="border-t border-muted"></div>
@@ -131,7 +173,7 @@
 				<button
 					onclick={(e) => handleUnsubscribe(channel.link, e)}
 					disabled={isDeleting}
-					class="group ml-1 flex shrink-0 items-center justify-center rounded p-1.5 text-accent transition hover:text-tertiary"
+					class="group m-0.5 flex shrink-0 items-center justify-center rounded-full p-1 text-accent transition hover:text-tertiary"
 					aria-label="Unsubscribe"
 				>
 					<X size={20} />

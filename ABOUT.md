@@ -60,17 +60,14 @@
 
 ## TODO - Current next tasks
 
+- Add sorting methods for channels
 - UI bug causes the main menu to close but subs menu to remain open -> app is blocked. This could be solved if
   the keyboard would cause the view height to change and wouldn't scroll downwards(? - although srolling down wards doesn't close menu on mobile?)
-- If feed already exists -> Appropriate toast message
 
-- Implement youtube rss img recognition
 - Implement periodical feed update -> and delete older ones (30 day/10k items cap )
-- Search filter for subscriptions and scroll of large rss lists - separate yt/podcast?
+
 - Add read/close functionality - maybe track each post with timer
 - If random+mobile, new shuffle on swipe up.
-- If scrolled down (and no special search or feed query), only scroll to top on navigation to previous (like social media pages) -> And shuffle if allowed in settings
-- Add keyboard navigation between posts
 - Save subscribed channels to a global database - Track popularity
 - Privacy notice - About page
 - Buy me a coffee

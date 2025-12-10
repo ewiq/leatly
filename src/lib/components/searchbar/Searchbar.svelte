@@ -19,7 +19,7 @@
 	});
 
 	$effect(() => {
-		if (!settings.isMobile && searchbarState.isSearchbarOpen && inputRef) {
+		if (searchbarState.isSearchbarOpen && inputRef) {
 			setTimeout(() => inputRef?.focus(), 0);
 		}
 	});
@@ -59,9 +59,9 @@
 
 {#if searchbarState.isSearchbarOpen}
 	<div
-		class="fixed right-0 bottom-0 left-0 {settings.isMobile
-			? 'z-300'
-			: 'z-50'} border-t border-muted bg-surface/90 py-2 shadow-2xl backdrop-blur-md md:px-4"
+		class="fixed right-0 left-0 md:bottom-0 {settings.isMobile
+			? 'top-0 z-300'
+			: 'z-50'} h-15 border-t border-muted bg-surface py-2 shadow md:px-4"
 		transition:fly={{ x: 1000, duration: 150 }}
 	>
 		<div class="mx-auto flex max-w-2xl items-center gap-3 px-4">

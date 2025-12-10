@@ -64,18 +64,18 @@
 	}
 </script>
 
-<div class="flex h-full flex-col">
+<div class="flex h-full flex-col pb-[env(safe-area-inset-bottom)]">
 	<div class="h-full grow">
 		<SubscriptionList></SubscriptionList>
 	</div>
 
 	<div class="flex grow-0 flex-col space-y-2">
 		<div class="border-t border-muted"></div>
-		<div class="mb-1 flex items-center gap-2 text-base font-semibold text-content">
+		<div class="mb-1 flex items-center gap-2 text-base text-content">
 			<div class="flex h-6 w-6 shrink-0 items-center justify-center rounded text-tertiary">
 				<Plus size={20} class="text-primary" />
 			</div>
-			<span>Add new channel</span>
+			<span>Add new sub</span>
 		</div>
 		<form onsubmit={subscribe}>
 			<div class="relative flex items-center">

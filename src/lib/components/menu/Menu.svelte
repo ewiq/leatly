@@ -54,22 +54,22 @@
 </script>
 
 <nav
-	class="sticky top-0 right-0 left-0 z-200 h-18 border-b border-muted bg-surface shadow-sm transition-transform duration-300 ease-in-out {menuState.isMenuHidden
+	class="sticky top-0 right-0 left-0 z-200 h-15 bg-surface shadow-sm transition-transform duration-300 ease-in-out {menuState.isMenuHidden
 		? '-translate-y-full'
 		: 'translate-y-0'}"
 >
-	<div class="relative flex items-center justify-between p-4">
+	<div class="mp-2 relative flex h-full items-center justify-between px-4">
 		<div class="relative flex grow-2 justify-start">
 			<button
 				bind:this={subsBtnRef}
 				onclick={() => {
 					menuState.toggleSubs();
 				}}
-				class="font-hepta flex h-10 cursor-pointer items-center gap-1 rounded-full border border-muted px-3 text-sm font-medium text-content shadow transition hover:bg-secondary md:border-0 md:shadow-none"
+				class="font-hepta flex h-10 cursor-pointer items-center gap-1 rounded-full border border-muted px-3 text-sm text-content shadow transition hover:bg-secondary md:border-0 md:shadow-none"
 				aria-label="Subscriptions"
 				aria-expanded={menuState.isSubsMenuOpen}
 			>
-				My subs
+				my subs
 				<ChevronDown
 					class="h-5 w-5 transition-transform duration-200 {menuState.isSubsMenuOpen
 						? 'rotate-180'
@@ -80,10 +80,8 @@
 			{#if menuState.isSubsMenuOpen}
 				<div
 					bind:this={subsDropdownRef}
-					transition:slide={{ duration: 300 }}
-					class="absolute top-full -left-4 z-60 mt-4 {menuState.isMenuHidden
-						? 'h-[calc(100dvh)]'
-						: 'h-[calc(100dvh-4.5rem)]'} w-screen bg-surface px-4 py-2 shadow-lg transition-[height] duration-300 md:-left-8 md:w-[35vw] md:pl-8 xl:w-2/3"
+					class="fixed top-0 left-0 z-60 mt-15 w-screen border-t border-muted bg-surface px-4 py-2 shadow-lg transition-[height] duration-300 md:w-84"
+					style="height: {menuState.isMenuHidden ? '100dvh' : 'calc(100dvh - 3.75rem)'};"
 					role="menu"
 				>
 					<MenuSubscriptions onSubscribe={handleNewSubscription} />
@@ -111,7 +109,7 @@
 			<span class="font-hepta text-2xl font-normal text-content">leaklet</span>
 			<button
 				bind:this={settingsBtnRef}
-				class="w-10 cursor-pointer overflow-hidden rounded-full border border-muted bg-white shadow transition hover:opacity-70"
+				class="w-10 cursor-pointer overflow-hidden rounded-full border border-muted bg-white shadow hover:opacity-70"
 				onclick={() => {
 					menuState.toggleSettings();
 				}}
@@ -124,7 +122,7 @@
 			{#if menuState.isSettingsMenuOpen}
 				<div
 					bind:this={settingsDropdownRef}
-					class="absolute top-full -right-4 z-210 mt-4 w-screen border-t border-muted bg-surface px-4 py-4 shadow-lg transition md:right-0 md:w-64"
+					class="left fixed top-0 right-0 z-210 mt-15 w-screen border-t border-muted bg-surface px-4 py-4 shadow-lg md:right-4 md:w-64"
 					role="menu"
 				>
 					<MenuSettings

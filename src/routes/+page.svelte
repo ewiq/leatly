@@ -33,6 +33,8 @@
 	let visibleItems: UIItem[] = $state([]);
 	let itemsPerPage = 10;
 	let loadTrigger: HTMLElement | undefined = $state();
+	let focusedIndex = $state(-1);
+	let isKeyboardScrolling = $state(false);
 
 	let feedFilter = $derived(page.url.searchParams.get('feed'));
 
@@ -49,6 +51,7 @@
 	$effect(() => {
 		const _ = filteredItems;
 		visibleItems = filteredItems.slice(0, itemsPerPage);
+		focusedIndex = 0;
 	});
 
 	$effect(() => {
@@ -66,7 +69,7 @@
 					}, 300);
 				}
 			},
-			{ rootMargin: '100px' } // Increased margin slightly for smoother loading before hitting bottom
+			{ rootMargin: '0px' }
 		);
 
 		observer.observe(loadTrigger);
@@ -79,7 +82,29 @@
 	function handleClearSearch() {
 		window.scrollTo({ top: 0, behavior: 'smooth' });
 	}
+
+	function handleKeydown(e: KeyboardEvent) {
+		if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
+
+		if (e.key === 'j' || e.key === 'ArrowDown') {
+			e.preventDefault();
+			isKeyboardScrolling = true;
+			focusedIndex = Math.min(focusedIndex + 1, visibleItems.length - 1);
+		} else if (e.key === 'k' || e.key === 'ArrowUp') {
+			e.preventDefault();
+			isKeyboardScrolling = true;
+			focusedIndex = Math.max(focusedIndex - 1, -1);
+		}
+	}
+
+	function updateFocusedIndexFromScroll(index: number) {
+		if (!isKeyboardScrolling) {
+			focusedIndex = index;
+		}
+	}
 </script>
+
+<svelte:window onkeydown={(e) => handleKeydown(e)} />
 
 <main class="mx-auto max-w-2xl p-4 pb-32">
 	{#if data.items.length === 0}
@@ -130,8 +155,15 @@
 		{/if}
 
 		<div class="flex flex-col gap-4">
-			{#each visibleItems as item (item.id)}
-				<FeedCard {item} />
+			{#each visibleItems as item, index (item.id)}
+				<FeedCard
+					{item}
+					focused={index === focusedIndex}
+					{index}
+					shouldScroll={isKeyboardScrolling}
+					onVisible={() => updateFocusedIndexFromScroll(index)}
+					onScrollComplete={() => (isKeyboardScrolling = false)}
+				/>
 			{/each}
 		</div>
 

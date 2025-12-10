@@ -5,7 +5,23 @@
 	import { extractDomain } from '$lib/utils/uiUtils';
 	import { menuState } from '$lib/stores/menu.svelte';
 
-	let { item }: { item: UIItem } = $props();
+	let {
+		item,
+		focused = false,
+		index = 0,
+		shouldScroll = false,
+		onVisible = () => {},
+		onScrollComplete = () => {}
+	}: {
+		item: UIItem;
+		focused?: boolean;
+		index?: number;
+		shouldScroll?: boolean;
+		onVisible?: () => void;
+		onScrollComplete?: () => void;
+	} = $props();
+
+	let feedCardElement: HTMLElement | undefined = $state();
 
 	let cleanDescription = $derived.by(() => {
 		const doc = new DOMParser().parseFromString(item.description, 'text/html');
@@ -13,9 +29,39 @@
 	});
 
 	let domainName = $derived(extractDomain(item.link));
+
+	// Handle keyboard scrolling
+	$effect(() => {
+		if (focused && shouldScroll && feedCardElement) {
+			feedCardElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+			// Reset keyboard scrolling flag after animation
+			setTimeout(onScrollComplete, 500);
+		}
+	});
+
+	// Track visibility for manual scrolling
+	$effect(() => {
+		if (!feedCardElement) return;
+
+		const observer = new IntersectionObserver(
+			(entries) => {
+				if (entries[0].isIntersecting && entries[0].intersectionRatio > 0.5) {
+					onVisible();
+				}
+			},
+			{ threshold: 0.5 }
+		);
+
+		observer.observe(feedCardElement);
+
+		return () => {
+			observer.disconnect();
+		};
+	});
 </script>
 
 <article
+	bind:this={feedCardElement}
 	class="flex max-h-[85vh] snap-start flex-col overflow-hidden rounded-xl border border-muted bg-surface shadow-sm transition lg:max-h-[70vh] {menuState.isMenuHidden
 		? 'scroll-mt-2'
 		: 'scroll-mt-20'}"
