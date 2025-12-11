@@ -48,7 +48,7 @@ export async function saveFeedToDB(feed: NormalizedRSSFeed, sourceUrl: string) {
 		if (!existingItem) {
 			const newItem: DBItem = {
 				...item,
-				id: itemId,
+				id: crypto.randomUUID(),
 				channelId: channelId,
 				savedAt: timestamp,
 				read: false,
@@ -91,5 +91,18 @@ export async function deleteChannel(channelId: string) {
 		cursor = await cursor.continue();
 	}
 
+	await tx.done;
+}
+
+export async function updateItem(itemId: string, updates: Partial<DBItem>) {
+	const db = await getDB();
+	const tx = db.transaction('items', 'readwrite');
+	const store = tx.objectStore('items');
+
+	const item = await store.get(itemId);
+	if (item) {
+		const updatedItem = { ...item, ...updates };
+		await store.put(updatedItem);
+	}
 	await tx.done;
 }

@@ -13,8 +13,10 @@ export const load: PageLoad = async ({ url, depends }) => {
 
 	const channelMap = new Map(channels.map((c) => [c.link, c]));
 
+	const nonClosedItems = items.filter((item) => !item.closed);
+
 	// Add channel title and channel img to items
-	const enrichedItems: UIItem[] = items.map((item) => {
+	const enrichedItems: UIItem[] = nonClosedItems.map((item) => {
 		const channel = channelMap.get(item.channelId);
 		return {
 			...item,

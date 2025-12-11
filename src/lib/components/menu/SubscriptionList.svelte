@@ -19,9 +19,16 @@
 
 	let isDeleting = $state(false);
 	let filterText = $state('');
-	let sortMode = $state<'a_z' | 'z_a' | 'date'>('a_z');
+
+	let sortMode = $state<'a_z' | 'z_a' | 'date'>(
+		typeof localStorage !== 'undefined'
+			? (localStorage.getItem('subSortMode') as 'a_z' | 'z_a' | 'date') || 'a_z'
+			: 'a_z'
+	);
 
 	let subscribedChannels: DBChannel[] = $state([]);
+
+	let menuJustOpened = $state(false);
 
 	let filteredChannels = $derived.by(() => {
 		let list = [...subscribedChannels];
@@ -38,6 +45,21 @@
 			list.sort((a, b) => b.savedAt - a.savedAt);
 		}
 		return list;
+	});
+
+	$effect(() => {
+		if (menuState.isSubsMenuOpen) {
+			menuJustOpened = true;
+			setTimeout(() => {
+				menuJustOpened = false;
+			}, 20);
+		}
+	});
+
+	$effect(() => {
+		if (typeof localStorage !== 'undefined') {
+			localStorage.setItem('subSortMode', sortMode);
+		}
 	});
 
 	async function loadChannels() {
@@ -147,7 +169,10 @@
 
 	<div class="flex flex-col overflow-y-auto">
 		{#each filteredChannels as channel (channel.title)}
-			<div class="group flex items-center" transition:slide={{ duration: 200 }}>
+			<div
+				class="group flex items-center"
+				transition:slide={{ duration: menuJustOpened ? 0 : 200 }}
+			>
 				<button
 					onclick={() => filterByChannel(channel)}
 					class="flex min-w-0 grow items-center gap-2 rounded-md py-0.5 text-left text-sm text-content transition-colors group-hover:text-tertiary hover:bg-secondary hover:text-content"

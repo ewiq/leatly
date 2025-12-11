@@ -121,7 +121,7 @@
 		</div>
 
 		<div class="relative flex grow-2 items-center justify-end gap-2 select-none md:gap-4">
-			<span class="font-hepta text-2xl font-normal text-content">leaklet</span>
+			<span class="font-hepta text-2xl font-normal text-content">leatly</span>
 			<button
 				bind:this={settingsBtnRef}
 				class="w-10 cursor-pointer overflow-hidden rounded-full border border-muted bg-white shadow hover:opacity-70"

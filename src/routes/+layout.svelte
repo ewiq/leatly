@@ -161,7 +161,7 @@
 
 <svelte:head>
 	<link rel="icon" href={favicon} />
-	<title>leaklet</title>
+	<title>leatly</title>
 </svelte:head>
 
 <main class="h-100dvh border-0 bg-background">

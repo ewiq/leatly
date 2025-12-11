@@ -15,7 +15,8 @@ export function trackDeviceState() {
 export function lockScroll() {
 	settings.isScrollLocked = true;
 	document.body.style.overflow = 'hidden';
-	// Scroll possible within list of subscriptions?
+
+	document.body.style.overscrollBehavior = 'none';
 	document.body.style.touchAction = 'none';
 }
 
@@ -23,6 +24,7 @@ export function unlockScroll() {
 	settings.isScrollLocked = false;
 	document.body.style.overflow = '';
 	document.body.style.touchAction = '';
+	document.body.style.overscrollBehavior = '';
 }
 
 export function extractDomain(url: string): string {

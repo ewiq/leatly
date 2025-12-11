@@ -7,8 +7,8 @@
 	import { slide } from 'svelte/transition';
 	import type { PageData } from './$types';
 	import { page } from '$app/state';
-	import { afterNavigate, beforeNavigate, invalidate } from '$app/navigation';
-	import { syncAllFeeds } from '$lib/services/feedSync';
+	import { afterNavigate, beforeNavigate } from '$app/navigation';
+	import { updateItem } from '$lib/db/db';
 
 	beforeNavigate(({ type, cancel }) => {
 		if (type === 'popstate') {
@@ -26,7 +26,7 @@
 	});
 
 	afterNavigate(() => {
-		window.scrollTo({ top: 0, behavior: 'instant' });
+		window.scrollTo({ top: 0, behavior: 'smooth' });
 	});
 
 	let { data }: { data: PageData } = $props();
@@ -79,6 +79,23 @@
 			observer.disconnect();
 		};
 	});
+
+	async function handleCloseItem(itemId: string) {
+		const itemToClose = visibleItems.find((item) => item.id === itemId);
+		if (itemToClose) {
+			await updateItem(itemId, { closed: true });
+
+			const indexInData = data.items.findIndex((item) => item.id === itemId);
+			if (indexInData !== -1) {
+				data.items.splice(indexInData, 1);
+			}
+			visibleItems = visibleItems.filter((item) => item.id !== itemId);
+
+			if (focusedIndex >= visibleItems.length && visibleItems.length > 0) {
+				focusedIndex = visibleItems.length - 1;
+			}
+		}
+	}
 
 	function handleClearSearch() {
 		window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -164,6 +181,7 @@
 					shouldScroll={isKeyboardScrolling}
 					onVisible={() => updateFocusedIndexFromScroll(index)}
 					onScrollComplete={() => (isKeyboardScrolling = false)}
+					onClose={handleCloseItem}
 				/>
 			{/each}
 		</div>

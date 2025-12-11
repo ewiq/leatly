@@ -5,13 +5,15 @@
 	import { extractDomain } from '$lib/utils/uiUtils';
 	import { menuState } from '$lib/stores/menu.svelte';
 	import { currentTime } from '$lib/stores/time.svelte';
+	import { slide } from 'svelte/transition';
 
 	let {
 		item,
 		focused = false,
 		shouldScroll = false,
 		onVisible = () => {},
-		onScrollComplete = () => {}
+		onScrollComplete = () => {},
+		onClose = () => {}
 	}: {
 		item: UIItem;
 		focused?: boolean;
@@ -19,6 +21,7 @@
 		shouldScroll?: boolean;
 		onVisible?: () => void;
 		onScrollComplete?: () => void;
+		onClose?: (itemId: string) => void;
 	} = $props();
 
 	let publishedDate = $derived.by(() => {
@@ -68,6 +71,7 @@
 </script>
 
 <article
+	transition:slide={{ duration: 200 }}
 	bind:this={feedCardElement}
 	class="flex max-h-[85vh] snap-start flex-col overflow-hidden rounded-xl border border-muted bg-surface shadow-sm transition lg:max-h-[70vh] {menuState.isMenuHidden
 		? 'scroll-mt-2'
@@ -121,6 +125,7 @@
 				<Bookmark class="h-6 w-6" />
 			</button>
 			<button
+				onclick={() => onClose(item.id)}
 				class="flex cursor-pointer items-center rounded-full bg-secondary/50 p-3 text-sm font-medium text-content transition hover:bg-secondary"
 			>
 				<X class="h-4 w-4" />

@@ -11,8 +11,7 @@ neetlet comes to rescue humanity from doomscrolling.
 - neaquo
 - sneaklet
 - onalme
-
-leatly
+- leatly
 
 Create, customize and share your own feed and freely choose what content you want to be exposted to. Fast and lightweight. No login needed and all data is stored on your side. No ai. You get a social media-like feed, but without the addictive, time-robbing and brain-sucking algorithms.
 Let's free the internet with Personal Media
@@ -40,6 +39,7 @@ Let's free the internet with Personal Media
 
 ### Next
 
+- Fix bug where item.id has duplicates because of lazily loading items - Error: Keyed each block has duplicate key
 - Add loading circle to top of feed when fetching
 - Add transition to feedCards
 - Delete transition from subsMenu lists on open-close of menu
@@ -78,6 +78,9 @@ Let's free the internet with Personal Media
 - Enhance "looks like you're new here landing page.
 - Check items if paywalled (? - this probably needs to fetch each item content)
 - Separate youtube, blog, news, podcasts sections in channel lists
+
+- Add 'hide channel from main feed option -> Maybe ... instead of close on sub list, and options in dropdown: delete, hide from main feed, add to collection
+- Collections: groups of channels, appearing just above add new sub if there are.
 
 ### Shuffle algorithm ideas
 
