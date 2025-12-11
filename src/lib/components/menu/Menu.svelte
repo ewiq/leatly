@@ -9,6 +9,7 @@
 	import { searchbarState } from '$lib/stores/searchbar.svelte';
 	import { currentTime } from '$lib/stores/time.svelte';
 	import SubsMenu from './SubsMenu.svelte';
+	import { slide } from 'svelte/transition';
 
 	let { handleNewSubscription } = $props();
 
@@ -67,11 +68,11 @@
 </script>
 
 <nav
-	class="sticky top-0 right-0 left-0 z-200 h-15 bg-surface shadow-sm transition-transform duration-300 ease-in-out {menuState.isMenuHidden
+	class="sticky top-0 right-0 left-0 z-200 h-15 bg-surface shadow-sm transition-transform duration-200 ease-in-out {menuState.isMenuHidden
 		? '-translate-y-full'
 		: 'translate-y-0'}"
 >
-	<div class="mp-2 relative flex h-full items-center justify-between px-4">
+	<div class="relative m-0 flex h-full items-center justify-between p-0 px-4">
 		<div class="relative flex grow-2 justify-start">
 			<button
 				bind:this={subsBtnRef}
@@ -93,8 +94,9 @@
 			{#if menuState.isSubsMenuOpen}
 				<div
 					bind:this={subsDropdownRef}
-					class="fixed top-0 left-0 z-60 mt-15 w-screen border-t border-muted bg-surface px-4 py-2 shadow-lg transition-[height] duration-300 md:w-84"
-					style="height: {menuState.isMenuHidden
+					transition:slide={{ duration: 150 }}
+					class="fixed left-0 z-60 w-screen border-t border-muted bg-surface px-4 py-2 shadow-lg transition-[height] duration-150 md:w-84"
+					style="top: {menuState.isMenuHidden ? '0px' : '60px'};  height: {menuState.isMenuHidden
 						? `${viewportHeight}px`
 						: `${viewportHeight - 60}px`};"
 					role="menu"

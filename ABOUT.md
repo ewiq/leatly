@@ -39,37 +39,32 @@ Let's free the internet with Personal Media
 
 ### Next
 
-- Fix bug where item.id has duplicates because of lazily loading items - Error: Keyed each block has duplicate key
+- UI BUG: Subs menu input - Slightly hidden by mobile keyboard - add padding to bottom ?
 - Add loading circle to top of feed when fetching
-- Add transition to feedCards
-- Delete transition from subsMenu lists on open-close of menu
-- Add items that where fetched directly, channel by channel to the feed, not in a batch
-- Correct a bug where infinit loading would occur on bottom but no more items charge (Cause unknown)
+- Suggestion: Add items that where fetched directly, channel by channel to the feed, not in a batch
 
-- Add save to favourites and close item functionaliy
-- Implement deletions of oldest (and not saved) items
+COLLECTIONS:
+
+- Instead of close on sub list, and options in dropdown: delete, hide from main feed, add to collection, copy channel url
+- Add 'hide channel from main feed/show channel on main feed option
+- Add save to favourites functionality and is saved -> Favourites Collection above subcription button.
+- Create automatic Youtube Collection if more than 1 YT channel added.
+
 - Add read for articles already read and display with reduced opacity.
 - Add timesDisplayed property to items - when active in viewport for mor than 1s ( or how much?)
 
-### Bugs/Corrections
-
-- Items with invalid date and no pubDate whatsoever in xml?
-- UI BUG: Subs menu input - hidden by mobile keyboard.
-- UI BUG: Main menu disappearing when mobile keyboard appearing. - Allow scroll somehow to be able to reopen it (without scrolling the background), or never allow main menu to close.
-- Navigation correction: ensure scroll: top beforenavigate also works on main feed
-
-### Later
+### For Later
 
 - Shuffle feed (see below)
 - i18n
 - Save subscribed rss channels to a global database - Track popularity
 - Privacy notice - About page
 - Buy me a coffee
+- Google analytics
 - OPML compatibility
 - Enhance first landing page - easily add first rss channels.
 - LARGE RSS COMPATIBILITY TESTING (see below collected problems)
 - Add api rate limiting
-- Add feed sync limiting
 - Domain checking and validation ('extractdomain') refactor and enhancment
 - Handle batch request for large amounts of subscribed feeds when syncing and make sure its optimized.
 - Handle old item deletion
@@ -78,9 +73,8 @@ Let's free the internet with Personal Media
 - Enhance "looks like you're new here landing page.
 - Check items if paywalled (? - this probably needs to fetch each item content)
 - Separate youtube, blog, news, podcasts sections in channel lists
-
-- Add 'hide channel from main feed option -> Maybe ... instead of close on sub list, and options in dropdown: delete, hide from main feed, add to collection
-- Collections: groups of channels, appearing just above add new sub if there are.
+- Implement deletions of oldest (and not saved) items
+- Handle feeds with no or invalid pubDate - add date '0'/current when importing?
 
 ### Shuffle algorithm ideas
 
@@ -102,4 +96,7 @@ Let's free the internet with Personal Media
 - Podcast and media player implementation
 - Disable YT shorts
 
-## RSS reader
+## RSS reader problems
+
+- When subscibing to: https://feeds.content.dowjones.io/public/rss/RSSOpinion
+- Image is not loaded properly -> although there clearly is a https://s.wsj.net/media/wsj_apple-touch-icon-180x180.png in source code.

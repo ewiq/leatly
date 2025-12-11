@@ -1,5 +1,6 @@
 import { openDB, type IDBPDatabase } from 'idb';
 import type { DBChannel, DBItem, NormalizedRSSFeed, RSSDatabase } from '$lib/types/rss';
+import { generateItemId } from '$lib/utils/itemId';
 
 const DB_NAME = 'rss-reader-db';
 const DB_VERSION = 1;
@@ -40,22 +41,23 @@ export async function saveFeedToDB(feed: NormalizedRSSFeed, sourceUrl: string) {
 
 	// --- Save Items ---
 	const operations = feed.items.map(async (item) => {
-		const itemId = item.guid || item.link;
 		const channelId = feed.data.link;
+
+		const itemId = generateItemId(item.link, item.title, channelId, item.pubDate);
 
 		const existingItem = await itemStore.get(itemId);
 
 		if (!existingItem) {
 			const newItem: DBItem = {
 				...item,
-				id: crypto.randomUUID(),
+				id: itemId,
 				channelId: channelId,
 				savedAt: timestamp,
 				read: false,
 				closed: false,
 				favourite: false
 			};
-			return itemStore.add(newItem);
+			return itemStore.put(newItem);
 		} else {
 			return Promise.resolve();
 		}

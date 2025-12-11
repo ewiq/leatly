@@ -46,6 +46,27 @@ function isValidUrl(urlString: string): boolean {
 	}
 }
 
+async function isValidImageUrl(url: string): Promise<boolean> {
+	if (!url) return false;
+
+	try {
+		const controller = new AbortController();
+		const timeoutId = setTimeout(() => controller.abort(), 3000);
+
+		const response = await fetch(url, {
+			method: 'HEAD',
+			signal: controller.signal
+		});
+
+		clearTimeout(timeoutId);
+
+		const contentType = response.headers.get('content-type');
+		return contentType ? contentType.startsWith('image/') : false;
+	} catch {
+		return false;
+	}
+}
+
 function isValidXML(xmlText: string): boolean {
 	if (!xmlText.trim().startsWith('<')) return false;
 	const hasXmlDeclaration = xmlText.includes('<?xml');
@@ -331,6 +352,14 @@ async function processSingleFeed(inputUrl: string): Promise<RSSFeedResponse> {
 		}
 
 		// Image fallback logic
+		if (normalizedFeed.data.image) {
+			// Validate that the image URL actually points to an image
+			const isValid = await isValidImageUrl(normalizedFeed.data.image);
+			if (!isValid) {
+				normalizedFeed.data.image = undefined; // Clear invalid image URL
+			}
+		}
+		// If no valid image, fetch from website
 		if (!normalizedFeed.data.image && normalizedFeed.data.link) {
 			try {
 				const websiteUrl = extractDomain(normalizedFeed.data.link);
@@ -338,7 +367,6 @@ async function processSingleFeed(inputUrl: string): Promise<RSSFeedResponse> {
 				if (fallbackIcon) normalizedFeed.data.image = fallbackIcon;
 			} catch {}
 		}
-
 		return {
 			success: true,
 			data: normalizedFeed,

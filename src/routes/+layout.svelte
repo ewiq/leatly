@@ -71,20 +71,19 @@
 
 		const currentScrollY = window.scrollY;
 
-		// Ignore invalid scroll values
 		if (currentScrollY < 0) return;
 
 		// Mobile
-		if (settings.isMobile) {
-			if (currentScrollY <= 50) {
-				menuState.isMenuHidden = false;
-			} else {
-				menuState.isMenuHidden = true;
-				menuState.isSettingsMenuOpen = false;
-			}
-			lastScrollY = currentScrollY;
-			return;
-		}
+		// if (settings.isMobile) {
+		// 	if (currentScrollY <= 50) {
+		// 		menuState.isMenuHidden = false;
+		// 	} else {
+		// 		menuState.isMenuHidden = true;
+		// 		menuState.isSettingsMenuOpen = false;
+		// 	}
+		// 	lastScrollY = currentScrollY;
+		// 	return;
+		// }
 
 		// Desktop
 		const scrollDelta = currentScrollY - lastScrollY;
@@ -164,7 +163,7 @@
 	<title>leatly</title>
 </svelte:head>
 
-<main class="h-100dvh border-0 bg-background">
+<main class="h-100dvh m-0 border-0 bg-background p-0">
 	<Menu {handleNewSubscription} />
 	{@render children()}
 </main>
