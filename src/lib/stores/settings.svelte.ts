@@ -5,6 +5,7 @@ export const settings = $state({
 	isMobile: false,
 	isScrollLocked: false,
 	isShuffled: true,
+	isReadHidden: false,
 
 	toggleDarkMode() {
 		this.isDark = !this.isDark;
@@ -20,6 +21,10 @@ export const settings = $state({
 	},
 	toggleShuffle() {
 		this.isShuffled = !this.isShuffled;
+		persistSettings();
+	},
+	toggleHideRead() {
+		this.isReadHidden = !this.isReadHidden;
 		persistSettings();
 	}
 });

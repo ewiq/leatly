@@ -132,16 +132,6 @@ export async function updateItem(itemId: string, updates: Partial<DBItem>) {
 }
 
 function createSearchTokens(item: any): string {
-	console.log(
-		normalizeText(
-			[
-				item.title,
-				item.description,
-				item.author,
-				Array.isArray(item.category) ? item.category.join(' ') : item.category
-			].join(' ')
-		)
-	);
 	return normalizeText(
 		[
 			item.title,

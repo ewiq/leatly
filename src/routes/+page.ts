@@ -9,6 +9,7 @@ export const load: PageLoad = async ({ url, depends }) => {
 
 	const searchQuery = url.searchParams.get('q') || '';
 	const feedFilter = url.searchParams.get('feed');
+	const favFilter = url.searchParams.get('favs');
 
 	const [items, channels] = await Promise.all([getAllItems(), getAllChannels()]);
 
@@ -28,7 +29,7 @@ export const load: PageLoad = async ({ url, depends }) => {
 	// Deduplicate items on main feed
 	let processedItems = enrichedItems;
 
-	if (!feedFilter) {
+	if (!feedFilter && !favFilter) {
 		const itemsByLink = new Map<string, UIItem[]>();
 
 		enrichedItems.forEach((item) => {
@@ -45,6 +46,11 @@ export const load: PageLoad = async ({ url, depends }) => {
 			}
 			return duplicates.sort((a, b) => b.savedAt - a.savedAt)[0];
 		});
+	}
+
+	// Filter by favourites
+	if (favFilter) {
+		processedItems = processedItems.filter((item) => item.favourite);
 	}
 
 	// Sort by publication date

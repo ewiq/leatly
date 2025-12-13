@@ -21,15 +21,22 @@
 	let isKeyboardScrolling = $state(false);
 
 	let feedFilter = $derived(page.url.searchParams.get('feed'));
+	let favFilter = $derived(page.url.searchParams.get('favs'));
 
 	let filteredItems = $derived.by(() => {
+		let items = allItems;
+
 		if (data.searchQuery.trim()) {
-			return allItems.filter((item) => searchItem(item, data.searchQuery));
+			items = allItems.filter((item) => searchItem(item, data.searchQuery));
 		}
 		if (feedFilter) {
-			return allItems.filter((item) => item.channelTitle === feedFilter);
+			items = allItems.filter((item) => item.channelTitle === feedFilter);
 		}
-		return allItems;
+
+		if (favFilter) {
+			items = items.filter((item) => item.favourite);
+		}
+		return items;
 	});
 
 	let visibleItems = $derived(filteredItems.slice(0, visibleCount));
@@ -92,6 +99,42 @@
 		}
 	}
 
+	async function handleAddToFavourites(itemId: string) {
+		const item = allItems.find((item) => item.id === itemId);
+
+		if (!item) {
+			console.error('Item not found');
+			return;
+		}
+
+		try {
+			const newFavouriteStatus = !item.favourite;
+			await updateItem(itemId, { favourite: newFavouriteStatus });
+
+			allItems = allItems.map((i) =>
+				i.id === itemId ? { ...i, favourite: newFavouriteStatus } : i
+			);
+		} catch (e) {
+			console.error('Failed to update favourite status', e);
+		}
+	}
+
+	async function handleAddToRead(itemId: string) {
+		const item = allItems.find((item) => item.id === itemId);
+		if (!item) {
+			console.error('Item not found');
+			return;
+		}
+		try {
+			const newReadStatus = !item.read;
+			await updateItem(itemId, { read: newReadStatus });
+
+			allItems = allItems.map((i) => (i.id === itemId ? { ...i, read: newReadStatus } : i));
+		} catch (e) {
+			console.error('Failed to update favourite status', e);
+		}
+	}
+
 	function handleKeydown(e: KeyboardEvent) {
 		if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
 
@@ -127,21 +170,28 @@
 			<span class="font-sm text-tertiary">Checking for fresh news...</span>
 		</div>
 	{/if}
-	{#if allItems.length === 0}
+	{#if allItems.length === 0 && !data.searchQuery && !feedFilter && !favFilter}
 		<div class="rounded-xl border border-dashed border-tertiary p-10 text-center">
 			<p class="text-lg text-content">No stories yet.</p>
 			<p class="text-tertiary">Subscribe to an RSS channel.</p>
 		</div>
 	{:else}
-		{#if data.searchQuery || feedFilter}
+		{#if data.searchQuery || feedFilter || favFilter}
 			<div transition:slide={{ duration: 200 }} class="snap-start scroll-mt-32">
 				<div class="mb-4 flex items-center justify-between px-2">
 					<p class="truncate text-sm text-tertiary">
 						<span class="text-primary">{filteredItems.length}</span>
 						{#if data.searchQuery}
-							search results for "<span class="font-medium text-content">{data.searchQuery}</span>"
+							search result{filteredItems.length === 1 ? '' : 's'} for "<span
+								class="font-medium text-content">{data.searchQuery}</span
+							>"
 						{:else if feedFilter}
-							results for <span class="font-medium text-content">{feedFilter}</span>
+							result{filteredItems.length === 1 ? '' : 's'} for
+							<span class="font-medium text-content">{feedFilter}</span>
+						{:else if favFilter}
+							<span>
+								favourite{filteredItems.length === 1 ? '' : 's'}
+							</span>
 						{/if}
 					</p>
 
@@ -161,7 +211,13 @@
 				<div class="flex flex-col items-center justify-center py-20 text-center">
 					<Search class="mb-4 h-12 w-12 text-tertiary/50" />
 					<p class="text-lg text-content">
-						No results found for "{data.searchQuery || feedFilter}"
+						{#if data.searchQuery}
+							No results found for "{data.searchQuery}"
+						{:else if feedFilter}
+							No results found for "{feedFilter}"
+						{:else if favFilter}
+							No favourites yet.
+						{/if}
 					</p>
 					<a
 						href="?"
@@ -184,6 +240,8 @@
 					onVisible={() => updateFocusedIndexFromScroll(index)}
 					onScrollComplete={() => (isKeyboardScrolling = false)}
 					onClose={handleCloseItem}
+					onAddToFavourite={handleAddToFavourites}
+					onAddToRead={handleAddToRead}
 				/>
 			{/each}
 		</div>

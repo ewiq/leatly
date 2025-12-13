@@ -1,10 +1,18 @@
 <script lang="ts">
-	import { Settings, Moon, Sun, MoveVertical, Magnet, Hourglass, Shuffle } from 'lucide-svelte';
+	import {
+		Settings,
+		Moon,
+		Sun,
+		MoveVertical,
+		Magnet,
+		Hourglass,
+		Shuffle,
+		MailCheck,
+		MailOpen
+	} from 'lucide-svelte';
 	import ToggleButton from './ToggleButton.svelte';
-	import { initializeSettings, settings } from '$lib/stores/settings.svelte';
+	import { settings } from '$lib/stores/settings.svelte';
 	let { isDark, isFontSerif, isSnapped } = $props();
-
-	$effect(() => {});
 
 	const settingsConfig = $derived([
 		{
@@ -35,6 +43,13 @@
 			label: settings.isShuffled ? 'Shuffle feed' : 'Chronological',
 			isChecked: settings.isShuffled,
 			onToggle: () => settings.toggleShuffle()
+		},
+		{
+			id: 'read',
+			icon: settings.isReadHidden ? MailOpen : MailCheck,
+			label: settings.isReadHidden ? 'Hide read' : 'Show read',
+			isChecked: settings.isReadHidden,
+			onToggle: () => settings.toggleHideRead()
 		}
 	]);
 </script>
@@ -54,7 +69,10 @@
 		>
 			<div class="flex items-center gap-2 text-sm text-content">
 				{#if setting.customIcon}
-					<span class="select-none {isFontSerif ? 'font-serif' : 'font-sans'} text-lg">A</span>
+					<span
+						class="select-none {isFontSerif ? 'font-serif' : 'font-sans'} w-4 text-center text-sm"
+						>A</span
+					>
 				{:else}
 					<setting.icon size={16} />
 				{/if}

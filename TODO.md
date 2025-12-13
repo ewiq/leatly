@@ -1,17 +1,19 @@
 ### NEXT
 
-- Refine handleSearch to include title, author, desc etc.
-- Add favourites
-- Add read
-- Add loading while search filtering - add results directly/sequentially if found?
-
 COLLECTIONS:
 
 - Instead of close on sub list, and options in dropdown: delete, hide from main feed, add to collection, copy channel url
 - Add 'hide channel from main feed/show channel on main feed option
 - Create automatic Youtube Collection if more than 1 YT channel added.
 
-- Add read for articles already read and display with reduced opacity.
+- OPTIMIZE +page.server to load items only slices
+
+- Optimize syncing - only when on main feed - and on top of page
+- Correct bug where clicking on subscribe always scrolls back to top
+- Correct bug where syncing time get registered in local storage upon unsuccesful sync
+- Move + Add new to top?
+- Add isLoadingRemoving to subs listItem deletion (no opacity)
+- Enhance subs list hover UI
 
 ### LATER
 
@@ -19,7 +21,7 @@ COLLECTIONS:
 - i18n
 - Save subscribed rss channels to a global database - Track popularity
 - Privacy notice - About page
-- Buy me a coffee
+- Buy me a coffee/Patreon
 - Google analytics
 - OPML compatibility
 - Enhance first landing page - easily add first rss channels.

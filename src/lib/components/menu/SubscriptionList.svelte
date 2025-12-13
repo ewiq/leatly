@@ -6,15 +6,7 @@
 	import { toastData } from '$lib/stores/toast.svelte';
 	import type { DBChannel } from '$lib/types/rss';
 	import { normalizeText } from '$lib/utils/searchUtils';
-	import {
-		ArrowDownAZ,
-		ArrowDownZA,
-		ClockArrowDown,
-		HashIcon,
-		Rss,
-		Search,
-		X
-	} from 'lucide-svelte';
+	import { ArrowDownAZ, ArrowDownZA, ClockArrowDown, HashIcon, Search, X } from 'lucide-svelte';
 	import { slide } from 'svelte/transition';
 
 	let isDeleting = $state(false);
@@ -119,7 +111,7 @@
 			<input
 				type="text"
 				bind:value={filterText}
-				class="w-full rounded-lg border border-muted bg-background py-2 pr-8 pl-8
+				class="m-0.5 w-full rounded-lg border border-muted bg-background py-1.5 pr-7.5 pl-7.5
                    text-sm font-light text-content placeholder:text-tertiary
                    focus:ring-2 focus:ring-primary focus:outline-none"
 			/>

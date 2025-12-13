@@ -1,11 +1,12 @@
 <script lang="ts">
 	import type { UIItem } from '$lib/types/rss';
-	import { Bookmark, X } from 'lucide-svelte';
+	import { Bookmark, Mail, MailCheck, X } from 'lucide-svelte';
 	import { timeAgo } from '$lib/utils/dateUtils';
 	import { extractDomain } from '$lib/utils/uiUtils';
 	import { menuState } from '$lib/stores/menu.svelte';
 	import { currentTime } from '$lib/stores/time.svelte';
 	import { slide } from 'svelte/transition';
+	import { settings } from '$lib/stores/settings.svelte';
 
 	let {
 		item,
@@ -13,7 +14,9 @@
 		shouldScroll = false,
 		onVisible = () => {},
 		onScrollComplete = () => {},
-		onClose = () => {}
+		onClose = () => {},
+		onAddToFavourite = () => {},
+		onAddToRead = () => {}
 	}: {
 		item: UIItem;
 		focused?: boolean;
@@ -22,6 +25,8 @@
 		onVisible?: () => void;
 		onScrollComplete?: () => void;
 		onClose?: (itemId: string) => void;
+		onAddToFavourite?: (itemId: string) => void;
+		onAddToRead?: (itemId: string) => void;
 	} = $props();
 
 	let publishedDate = $derived.by(() => {
@@ -71,18 +76,19 @@
 </script>
 
 <article
-	transition:slide={{ duration: 200 }}
+	transition:slide={{ duration: 150 }}
 	bind:this={feedCardElement}
 	class="flex max-h-[85vh] snap-start flex-col overflow-hidden rounded-xl border border-muted bg-surface shadow-sm transition lg:max-h-[70vh] {menuState.isMenuHidden
 		? 'scroll-mt-2'
 		: 'scroll-mt-20'}"
+	class:opacity-30={item.read === true && settings.isReadHidden}
 >
 	<div class="shrink-0 px-5 py-3">
 		<div class="flex items-center gap-3">
 			{#if item.channelImage}
 				<img src={item.channelImage} alt="" class="h-9 w-9 rounded-full object-cover" />
 			{/if}
-			<div class="flex flex-col leading-tight">
+			<div class="flex flex-1 flex-col leading-tight">
 				<span class="line-clamp-1 text-base font-semibold text-content">
 					{item.channelTitle}
 				</span>
@@ -94,6 +100,15 @@
 					<span>{publishedDate}</span>
 				</div>
 			</div>
+			{#if item.read === true && settings.isReadHidden}
+				<button
+					onclick={() => onAddToRead(item.id)}
+					class="group relative cursor-pointer rounded-full p-2 text-content opacity-50 transition hover:bg-secondary hover:text-primary"
+					title="Mark as Unread"
+				>
+					<MailCheck class="h-5 w-5" />
+				</button>
+			{/if}
 		</div>
 	</div>
 	{#if item.image}
@@ -102,7 +117,13 @@
 		</div>
 	{/if}
 	<div class="shrink-0 px-5 py-2">
-		<a href={item.link} target="_blank" rel="noopener noreferrer" class="group block">
+		<a
+			onclick={() => onAddToRead(item.id)}
+			href={item.link}
+			target="_blank"
+			rel="noopener noreferrer"
+			class="group block"
+		>
 			{#if domainName}
 				<div class="tracking-wifade mb-1 text-xs text-tertiary uppercase">
 					{domainName}
@@ -119,10 +140,17 @@
 		</p>
 		<div class="mt-2 flex items-center justify-between border-t border-muted pt-2">
 			<button
-				class="cursor-pointer rounded-full p-2 text-content transition hover:bg-secondary hover:text-primary"
+				onclick={() => onAddToFavourite(item.id)}
+				class="cursor-pointer rounded-full p-2 text-content transition hover:bg-secondary hover:text-primary {item.favourite
+					? ' bg-secondary '
+					: 'text-content'}"
 				title="Save to Favourites"
 			>
-				<Bookmark class="h-6 w-6" />
+				<Bookmark
+					class="h-6 w-6 transition-all duration-300 {item.favourite
+						? 'scale-105 fill-current text-primary'
+						: ''}"
+				/>
 			</button>
 			<button
 				onclick={() => onClose(item.id)}
