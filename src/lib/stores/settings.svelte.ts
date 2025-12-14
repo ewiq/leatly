@@ -34,6 +34,7 @@ export function initializeSettings() {
 	const savedFont = localStorage.getItem('font');
 	const savedScrollSnap = localStorage.getItem('scrollSnap');
 	const savedShuffleType = localStorage.getItem('isShuffled');
+	const savedHideRead = localStorage.getItem('isReadHidden');
 
 	if (savedTheme) {
 		settings.isDark = savedTheme === 'dark';
@@ -51,6 +52,10 @@ export function initializeSettings() {
 
 	if (savedShuffleType === 'true') {
 		settings.isShuffled = true;
+	}
+
+	if (savedHideRead === 'true') {
+		settings.isReadHidden = true;
 	}
 
 	applySettings();
@@ -79,11 +84,11 @@ function applySettings() {
 	}
 
 	// Apply shuffle
-	if (settings.isShuffled) {
-		// TODO: Apply random shuffle
-	} else {
-		// TODO: Apply chronological shuffle
-	}
+	// if (settings.isShuffled) {
+	// 	// TODO: Apply random shuffle
+	// } else {
+	// 	// TODO: Apply chronological shuffle
+	// }
 }
 
 function persistSettings() {
@@ -91,5 +96,6 @@ function persistSettings() {
 	localStorage.setItem('font', settings.isFontSerif ? 'serif' : 'sans');
 	localStorage.setItem('scrollSnap', settings.isSnapped ? 'true' : 'false');
 	localStorage.setItem('isShuffled', settings.isShuffled ? 'true' : 'false');
+	localStorage.setItem('isReadHidden', settings.isReadHidden ? 'true' : 'false');
 	applySettings();
 }

@@ -1,6 +1,6 @@
 <script lang="ts">
 	import Logo from '$lib/assets/logo.png';
-	import MenuSettings from './SettingsMenu.svelte';
+	import SettingsDropdown from './settings-dropdown/SettingsDropdown.svelte';
 	import { ChevronDown } from 'lucide-svelte';
 	import { settings } from '$lib/stores/settings.svelte';
 	import { menuState } from '$lib/stores/menu.svelte';
@@ -8,7 +8,7 @@
 	import { formatDateTime } from '$lib/utils/dateUtils';
 	import { searchbarState } from '$lib/stores/searchbar.svelte';
 	import { currentTime } from '$lib/stores/time.svelte';
-	import SubsMenu from './SubsMenu.svelte';
+	import MySubsDropdown from './my-subs-dropdown/MySubsDropdown.svelte';
 	import { slide } from 'svelte/transition';
 
 	let { handleNewSubscription } = $props();
@@ -79,7 +79,7 @@
 				onclick={() => {
 					menuState.toggleSubs();
 				}}
-				class="font-hepta flex h-10 cursor-pointer items-center gap-1 rounded-full border border-muted px-3 text-sm text-content shadow transition hover:bg-secondary md:border-0 md:shadow-none"
+				class="font-hepta flex h-10 cursor-pointer items-center gap-1 rounded-full border border-muted px-3 text-content shadow transition hover:bg-secondary md:border-0 md:shadow-none"
 				aria-label="Subscriptions"
 				aria-expanded={menuState.isSubsMenuOpen}
 			>
@@ -101,7 +101,7 @@
 						: `${viewportHeight - 60}px`};"
 					role="menu"
 				>
-					<SubsMenu onSubscribe={handleNewSubscription} />
+					<MySubsDropdown onSubscribe={handleNewSubscription} />
 				</div>
 			{/if}
 		</div>
@@ -142,7 +142,7 @@
 					class="left fixed top-0 right-0 z-210 mt-15 w-screen border-t border-muted bg-surface px-4 py-4 shadow-lg md:right-4 md:w-64"
 					role="menu"
 				>
-					<MenuSettings
+					<SettingsDropdown
 						isDark={settings.isDark}
 						isFontSerif={settings.isFontSerif}
 						isSnapped={settings.isSnapped}

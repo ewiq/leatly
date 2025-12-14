@@ -1,7 +1,7 @@
 <script lang="ts">
 	import './layout.css';
 	import favicon from '$lib/assets/logo.png';
-	import Toast from '$lib/components/menu/Toast.svelte';
+	import Toast from '$lib/components/toast/Toast.svelte';
 	import Menu from '$lib/components/menu/Menu.svelte';
 	import { toastData } from '$lib/stores/toast.svelte';
 	import { invalidate } from '$app/navigation';

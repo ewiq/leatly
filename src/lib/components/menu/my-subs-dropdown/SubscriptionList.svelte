@@ -6,7 +6,15 @@
 	import { toastData } from '$lib/stores/toast.svelte';
 	import type { DBChannel } from '$lib/types/rss';
 	import { normalizeText } from '$lib/utils/searchUtils';
-	import { ArrowDownAZ, ArrowDownZA, ClockArrowDown, HashIcon, Search, X } from 'lucide-svelte';
+	import {
+		ArrowDownAZ,
+		ArrowDownZA,
+		ClockArrowDown,
+		Ellipsis,
+		HashIcon,
+		Search,
+		X
+	} from 'lucide-svelte';
 	import { slide } from 'svelte/transition';
 
 	let isDeleting = $state(false);
@@ -156,21 +164,19 @@
 	<div class="flex flex-col overflow-y-auto">
 		{#each filteredChannels as channel (channel.title)}
 			<div
-				class="group flex items-center"
+				class="group flex items-center has-[button[data-ellipsis]:hover]:opacity-50"
 				transition:slide={{ duration: menuJustOpened ? 0 : 200 }}
 			>
 				<button
 					onclick={() => filterByChannel(channel)}
-					class="flex min-w-0 grow items-center gap-2 rounded-md px-1.5 pr-1 pl-0 text-left text-sm text-accent transition-colors group-hover:opacity-50 hover:bg-secondary"
+					class="m-0.5 flex min-w-0 grow cursor-pointer items-center gap-2 rounded-md py-0.5 pr-1.5 pl-0.5 text-left text-sm text-accent transition-colors hover:bg-secondary"
 				>
-					<div
-						class="flex h-7 w-7 shrink-0 items-center justify-center rounded bg-white text-tertiary group-hover:opacity-50"
-					>
+					<div class="flex h-7 w-7 shrink-0 items-center justify-center rounded text-tertiary">
 						{#if channel.image}
 							<img
 								src={channel.image}
 								alt={channel.title}
-								class=" h-full w-full scale-75 rounded object-cover"
+								class=" h-full w-full scale-85 rounded object-cover"
 							/>
 						{:else}
 							<HashIcon size={16} />
@@ -185,10 +191,11 @@
 				<button
 					onclick={(e) => handleUnsubscribe(channel.link, e)}
 					disabled={isDeleting}
-					class="group m-0.5 mr-1 flex shrink-0 items-center justify-center rounded-full p-1 text-accent transition hover:text-tertiary"
+					data-ellipsis
+					class=" m-0.5 mr-1 flex shrink-0 cursor-pointer items-center justify-center rounded-full p-1 text-accent transition hover:text-tertiary"
 					aria-label="Unsubscribe"
 				>
-					<X size={20} />
+					<Ellipsis size={20} />
 				</button>
 			</div>
 		{/each}

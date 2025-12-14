@@ -60,6 +60,7 @@ body {
 	--color-secondary: #ffebd4; /* Light orange for highlights (orange-200) */
 	--color-content: #0f172a; /* Almost black, but softer */
 	--color-background: #f8fafc; /* Off-white background, Notion-like */
+	--color-accent-button: #333b46;
 }
 .dark {
 	--color-primary: #fb923c; /* Orange-400 for dark mode */
@@ -70,6 +71,7 @@ body {
 	--color-secondary: #1a182c; /* Dark orange-900 */
 	--color-content: #f1f5f9; /* Off-white text */
 	--color-background: #0f172a; /* Very dark blue-gray background */
+	--color-accent-button: #f8fafc;
 }
 .font-hepta {
 	font-family: 'Hepta Slab', serif;
