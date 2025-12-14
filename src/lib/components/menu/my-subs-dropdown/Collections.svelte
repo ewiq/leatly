@@ -2,6 +2,7 @@
 	import { goto } from '$app/navigation';
 	import { menuState } from '$lib/stores/menu.svelte';
 	import { settings } from '$lib/stores/settings.svelte';
+	import { filterByChannel } from '$lib/utils/filterByChannel';
 	import { Bookmark, ChevronDown, Folder, Hash } from 'lucide-svelte';
 	import { slide } from 'svelte/transition';
 
@@ -52,18 +53,6 @@
 			menuState.isSubsMenuOpen = false;
 		}
 	}
-
-	async function filterByChannel(channelName: string) {
-		const params = new URLSearchParams();
-		params.set('feed', channelName);
-
-		await goto(`?${params.toString()}`, {});
-		window.scrollTo({ top: 0, behavior: 'smooth' });
-
-		if (settings.isMobile) {
-			menuState.isSubsMenuOpen = false;
-		}
-	}
 </script>
 
 <div class="border-t border-muted pt-1"></div>
@@ -94,7 +83,7 @@
 									<path d="M10 9L16 12L10 15V9Z" fill="white" />
 								</svg>
 							{:else}
-								<Folder size={16} class="" />
+								<Folder size={20} class="" />
 							{/if}
 						</div>
 						<span class="font-medium">{collection.name}</span>

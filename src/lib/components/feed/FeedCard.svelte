@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { UIItem } from '$lib/types/rss';
-	import { Bookmark, Mail, MailCheck, X } from 'lucide-svelte';
+	import { Bookmark, MailCheck, X } from 'lucide-svelte';
 	import { timeAgo } from '$lib/utils/dateUtils';
 	import { extractDomain } from '$lib/utils/uiUtils';
 	import { menuState } from '$lib/stores/menu.svelte';
@@ -80,7 +80,7 @@
 	bind:this={feedCardElement}
 	class="flex max-h-[85vh] snap-start flex-col overflow-hidden rounded-xl border border-muted bg-surface shadow-sm transition lg:max-h-[70vh] {menuState.isMenuHidden
 		? 'scroll-mt-2'
-		: 'scroll-mt-20'}"
+		: 'scroll-mt-18'}"
 	class:opacity-30={item.read === true && settings.isReadHidden}
 >
 	<div class="shrink-0 px-5 py-3">
@@ -147,7 +147,7 @@
 				title="Save to Favourites"
 			>
 				<Bookmark
-					class="h-6 w-6 transition-all duration-300 {item.favourite
+					class="h-6 w-6 transition-all {item.favourite
 						? 'scale-105 fill-current text-primary'
 						: ''}"
 				/>

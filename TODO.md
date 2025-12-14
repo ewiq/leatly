@@ -1,9 +1,7 @@
 ### NEXT
 
-COLLECTIONS:
-
-- Instead of close on sub list, and options in dropdown: delete, hide from main feed, add to collection, copy channel url
-- Add 'hide channel from main feed/show channel on main feed option
+- Refactor +page.svelte and FeedCards.svelte
+- Implement Collections: ellipsis droppwon: delete, hide/show from main feed, add to collection, copy channel url
 - Create automatic Youtube Collection if more than 1 YT channel added.
 
 - OPTIMIZE +page.server to load items only slices
@@ -14,6 +12,18 @@ COLLECTIONS:
 - Move + Add new to top?
 - Add isLoadingRemoving to subs listItem deletion (no opacity)
 - Enhance subs list hover UI
+- Faster syncing - load channel items sequentially to feed?
+- Better UI syncing: display the 'loading' FeedHeader even if no real syncing
+- Better UI syncing: presync in the background and faster refresh when user requests a reload
+
+### BUGS
+
+- Keyboard post navigation has buggy behaviour -> Probably because of index number messed up by freshly appearing visibleItems
+- Mobile UI bug - scroll still possible by multiple input open/close
+- Refresh itemIndex after sync for correct keyboard navigation
+- Handle items with invalid date and no pubDate whatsoever in source xml
+- Navigation correction: ensure scroll: top beforenavigate also works on main feed
+- Bug where syncing data -> updating feed while SubsMenu is open would cause a jumpscroll and glitch.
 
 ### LATER
 
@@ -37,15 +47,6 @@ COLLECTIONS:
 - Implement deletions of oldest (and not saved) items
 - Handle feeds with no or invalid pubDate - add date '0'/current when importing?
 - Suggestion: Add items that where fetched directly, channel by channel to the feed, not in a batch
-
-### BUGS
-
-- Keyboard post navigation has buggy behaviour -> Probably because of index number messed up by freshly appearing visibleItems
-- Mobile UI bug - scroll still possible by multiple input open/close
-- Refresh itemIndex after sync for correct keyboard navigation
-- Handle items with invalid date and no pubDate whatsoever in source xml
-- Navigation correction: ensure scroll: top beforenavigate also works on main feed
-- Bug where syncing data -> updating feed while SubsMenu is open would cause a jumpscroll and glitch.
 
 ## Misc
 
@@ -72,5 +73,7 @@ COLLECTIONS:
 
 - When subscibing to: https://feeds.content.dowjones.io/public/rss/RSSOpinion
 - Image is not loaded properly -> although there clearly is a https://s.wsj.net/media/wsj_apple-touch-icon-180x180.png in source code.
-- Qubit - no icon image: https://qubit.hu/feed. Maybe Enable gid and handle otherwise for WSJ?
+- Qubit - no icon image: https://qubit.hu/feed. Maybe Enable gid and handle otherwise for WSJ? PROBABLY DOESN'T FETCH because no WWW needed. -
+- Enhance URL: try without https, and better handleing of www. or no www.
 - Enhance Description parser: https://www.nme.com/feed gives html/MD text, http://feeds.feedburner.com/Archeyes give incorrect text.
+- Maybe rather do website icon first, and if no website icon, only then rss icon?
