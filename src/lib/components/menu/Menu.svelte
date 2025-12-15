@@ -11,7 +11,7 @@
 	import MySubsDropdown from './my-subs-dropdown/MySubsDropdown.svelte';
 	import { slide } from 'svelte/transition';
 
-	let { handleNewSubscription } = $props();
+	let { handleNewSubscription, data } = $props();
 
 	let settingsBtnRef: HTMLButtonElement | undefined = $state();
 	let settingsDropdownRef: HTMLDivElement | undefined = $state();
@@ -26,7 +26,6 @@
 	function handleClickOutside(e: MouseEvent) {
 		const target = e.target as Node;
 
-		// Check if click is outside settings button and dropdown
 		if (
 			menuState.isSettingsMenuOpen &&
 			settingsBtnRef &&
@@ -79,11 +78,12 @@
 				onclick={() => {
 					menuState.toggleSubs();
 				}}
-				class="font-hepta flex h-10 cursor-pointer items-center gap-1 rounded-full border border-muted px-3 text-content shadow transition hover:bg-secondary md:border-0 md:shadow-none"
+				class="font-hepta flex h-10 w-30 cursor-pointer items-center justify-between rounded-full border border-muted px-3 text-content shadow transition hover:bg-secondary md:border-0 md:shadow-none"
 				aria-label="Subscriptions"
 				aria-expanded={menuState.isSubsMenuOpen}
 			>
-				my subs
+				<div class=" w-full text-center">my subs</div>
+
 				<ChevronDown
 					class="h-5 w-5 transition-transform duration-200 {menuState.isSubsMenuOpen
 						? 'rotate-180'
@@ -95,13 +95,13 @@
 				<div
 					bind:this={subsDropdownRef}
 					transition:slide={{ duration: 150 }}
-					class="fixed left-0 z-60 w-screen border-t border-muted bg-surface py-2 pr-2 pl-4 shadow-lg transition-[height] duration-150 md:w-84"
+					class="fixed left-0 z-60 w-screen border-t border-muted bg-surface pt-1 pr-2 pb-2 pl-4 shadow-lg transition-[height] duration-150 md:w-84"
 					style="top: {menuState.isMenuHidden ? '0px' : '60px'};  height: {menuState.isMenuHidden
 						? `${viewportHeight}px`
 						: `${viewportHeight - 60}px`};"
 					role="menu"
 				>
-					<MySubsDropdown onSubscribe={handleNewSubscription} />
+					<MySubsDropdown {data} onSubscribe={handleNewSubscription} />
 				</div>
 			{/if}
 		</div>

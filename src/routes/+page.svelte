@@ -1,7 +1,8 @@
 <script lang="ts">
 	import FeedCard from '$lib/components/feed/FeedCard.svelte';
+	import FeedHeader from '$lib/components/feed/FeedHeader.svelte';
 	import Searchbar from '$lib/components/searchbar/Searchbar.svelte';
-	import { LoaderCircle, Search } from 'lucide-svelte';
+	import { LoaderCircle } from 'lucide-svelte';
 	import { searchItem } from '$lib/utils/searchUtils';
 	import { slide } from 'svelte/transition';
 	import type { PageData } from './$types';
@@ -9,6 +10,7 @@
 	import { afterNavigate, beforeNavigate } from '$app/navigation';
 	import { updateItem } from '$lib/db/db';
 	import { sync } from '$lib/stores/sync.svelte';
+	import { feed } from '$lib/stores/feed.svelte';
 
 	let { data }: { data: PageData } = $props();
 
@@ -22,12 +24,13 @@
 
 	let feedFilter = $derived(page.url.searchParams.get('feed'));
 	let favFilter = $derived(page.url.searchParams.get('favs'));
+	let searchQuery = $derived(data.searchQuery);
 
 	let filteredItems = $derived.by(() => {
 		let items = allItems;
 
-		if (data.searchQuery.trim()) {
-			items = allItems.filter((item) => searchItem(item, data.searchQuery));
+		if (searchQuery.trim()) {
+			items = allItems.filter((item) => searchItem(item, searchQuery));
 		}
 		if (feedFilter) {
 			items = allItems.filter((item) => item.channelTitle === feedFilter);
@@ -71,6 +74,7 @@
 		}
 	});
 
+	// Infinite Scroll
 	$effect(() => {
 		if (!loadTrigger) return;
 		const observer = new IntersectionObserver(
@@ -91,12 +95,14 @@
 	});
 
 	async function handleCloseItem(itemId: string) {
+		feed.isItemClosing = true;
 		allItems = allItems.filter((item) => item.id !== itemId);
 		try {
 			await updateItem(itemId, { closed: true });
 		} catch (e) {
 			console.error('Failed to close item', e);
 		}
+		feed.isItemClosing = false;
 	}
 
 	async function handleAddToFavourites(itemId: string) {
@@ -137,7 +143,6 @@
 
 	function handleKeydown(e: KeyboardEvent) {
 		if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
-
 		if (e.ctrlKey || e.metaKey || e.altKey || e.shiftKey) return;
 
 		if (e.key === 'j' || e.key === 'ArrowDown') {
@@ -170,92 +175,43 @@
 			<span class="font-sm text-tertiary">Checking for fresh news...</span>
 		</div>
 	{/if}
-	{#if allItems.length === 0 && !data.searchQuery && !feedFilter && !favFilter}
-		<div class="rounded-xl border border-dashed border-tertiary p-10 text-center">
-			<p class="text-lg text-content">No stories yet.</p>
-			<p class="text-tertiary">Subscribe to an RSS channel.</p>
-		</div>
-	{:else}
-		{#if data.searchQuery || feedFilter || favFilter}
-			<div transition:slide={{ duration: 200 }} class="snap-start scroll-mt-32">
-				<div class="mb-4 flex items-center justify-between px-2">
-					<p class="truncate text-sm text-tertiary">
-						<span class="text-primary">{filteredItems.length}</span>
-						{#if data.searchQuery}
-							search result{filteredItems.length === 1 ? '' : 's'} for "<span
-								class="font-medium text-content">{data.searchQuery}</span
-							>"
-						{:else if feedFilter}
-							result{filteredItems.length === 1 ? '' : 's'} for
-							<span class="font-medium text-content">{feedFilter}</span>
-						{:else if favFilter}
-							<span>
-								favourite{filteredItems.length === 1 ? '' : 's'}
-							</span>
-						{/if}
-					</p>
 
-					{#if filteredItems.length !== 0}
-						<a
-							href="?"
-							onclick={scrollToTop}
-							class="shrink-0 cursor-pointer text-sm text-primary hover:underline"
-						>
-							Clear search
-						</a>
-					{/if}
-				</div>
-			</div>
+	<FeedHeader
+		filteredCount={filteredItems.length}
+		totalCount={allItems.length}
+		{searchQuery}
+		{feedFilter}
+		{favFilter}
+		onClear={scrollToTop}
+	/>
 
-			{#if filteredItems.length === 0}
-				<div class="flex flex-col items-center justify-center py-20 text-center">
-					<Search class="mb-4 h-12 w-12 text-tertiary/50" />
-					<p class="text-lg text-content">
-						{#if data.searchQuery}
-							No results found for "{data.searchQuery}"
-						{:else if feedFilter}
-							No results found for "{feedFilter}"
-						{:else if favFilter}
-							No favourites yet.
-						{/if}
-					</p>
-					<a
-						href="?"
-						onclick={scrollToTop}
-						class="mt-2 cursor-pointer text-primary hover:underline"
-					>
-						Clear search
-					</a>
-				</div>
-			{/if}
-		{/if}
+	<div class="flex flex-col gap-4">
+		{#each visibleItems as item, index (item.id)}
+			<FeedCard
+				{item}
+				focused={index === focusedIndex}
+				{index}
+				shouldScroll={isKeyboardScrolling}
+				onVisible={() => updateFocusedIndexFromScroll(index)}
+				onScrollComplete={() => (isKeyboardScrolling = false)}
+				onClose={handleCloseItem}
+				onAddToFavourite={handleAddToFavourites}
+				onAddToRead={handleAddToRead}
+			/>
+		{/each}
+	</div>
 
-		<div class="flex flex-col gap-4">
-			{#each visibleItems as item, index (item.id)}
-				<FeedCard
-					{item}
-					focused={index === focusedIndex}
-					{index}
-					shouldScroll={isKeyboardScrolling}
-					onVisible={() => updateFocusedIndexFromScroll(index)}
-					onScrollComplete={() => (isKeyboardScrolling = false)}
-					onClose={handleCloseItem}
-					onAddToFavourite={handleAddToFavourites}
-					onAddToRead={handleAddToRead}
-				/>
-			{/each}
-		</div>
-
+	{#if allItems.length > 0}
 		<div bind:this={loadTrigger} class="flex h-20 items-center justify-center py-8">
 			{#if visibleItems.length < filteredItems.length}
 				<LoaderCircle class="h-6 w-6 animate-spin text-tertiary" />
 			{:else if visibleItems.length > 0}
 				<span class="text-sm text-tertiary">
-					{data.searchQuery ? '' : "You're all caught up!"}
+					{searchQuery ? '' : "You're all caught up!"}
 				</span>
 			{/if}
 		</div>
 	{/if}
 </main>
 
-<Searchbar initialValue={data.searchQuery} />
+<Searchbar initialValue={searchQuery} />

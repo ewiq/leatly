@@ -1,22 +1,10 @@
 <script lang="ts">
-	import { goto, invalidate } from '$app/navigation';
-	import { deleteChannel, getAllChannels } from '$lib/db/db';
+	import { getAllChannels } from '$lib/db/db';
 	import { menuState } from '$lib/stores/menu.svelte';
-	import { settings } from '$lib/stores/settings.svelte';
-	import { toastData } from '$lib/stores/toast.svelte';
 	import type { DBChannel } from '$lib/types/rss';
-	import { filterByChannel } from '$lib/utils/filterByChannel';
 	import { normalizeText } from '$lib/utils/searchUtils';
-	import {
-		ArrowDownAZ,
-		ArrowDownZA,
-		ClockArrowDown,
-		Ellipsis,
-		HashIcon,
-		Search,
-		X
-	} from 'lucide-svelte';
-	import { slide } from 'svelte/transition';
+	import { ArrowDownAZ, ArrowDownZA, ClockArrowDown, Search, X } from 'lucide-svelte';
+	import ChannelList from './ChannelList.svelte';
 
 	let isDeleting = $state(false);
 	let filterText = $state('');
@@ -67,27 +55,6 @@
 		subscribedChannels = await getAllChannels();
 	}
 
-	async function handleUnsubscribe(channelId: string, event: Event) {
-		event.stopPropagation();
-
-		if (!confirm('Are you sure you want to remove this channel?')) return;
-
-		isDeleting = true;
-		try {
-			await deleteChannel(channelId);
-			await loadChannels();
-			await invalidate('app:feed');
-			toastData.message = 'Channel removed';
-			toastData.type = 'success';
-		} catch (error) {
-			console.error('Failed to delete channel', error);
-			toastData.message = 'Failed to remove channel';
-			toastData.type = 'error';
-		} finally {
-			isDeleting = false;
-		}
-	}
-
 	$effect(() => {
 		subscribedChannels;
 		loadChannels();
@@ -96,6 +63,12 @@
 </script>
 
 <div class="flex h-full flex-col">
+	<div class="border-t border-muted pt-1"></div>
+
+	<div class="px-2 py-1">
+		<h3 class="text-sm tracking-widest text-tertiary uppercase">All subs</h3>
+	</div>
+
 	<div class="space-between mb-2 flex items-center text-base font-semibold text-content">
 		<div class="relative flex-1 flex-row">
 			<div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-2">
@@ -148,42 +121,12 @@
 	<div class="border-t border-muted"></div>
 
 	<div class="flex flex-col overflow-y-auto">
-		{#each filteredChannels as channel (channel.title)}
-			<div
-				class="group flex items-center has-[button[data-ellipsis]:hover]:opacity-50"
-				transition:slide={{ duration: menuJustOpened ? 0 : 200 }}
-			>
-				<button
-					onclick={() => filterByChannel(channel)}
-					class="m-0.5 flex min-w-0 grow cursor-pointer items-center gap-2 rounded-md py-0.5 pr-1.5 pl-0.5 text-left text-sm text-accent transition-colors hover:bg-secondary"
-				>
-					<div class="flex h-7 w-7 shrink-0 items-center justify-center rounded text-tertiary">
-						{#if channel.image}
-							<img
-								src={channel.image}
-								alt={channel.title}
-								class=" h-full w-full scale-85 rounded object-cover"
-							/>
-						{:else}
-							<HashIcon size={16} />
-						{/if}
-					</div>
-
-					<span class="block min-w-0 truncate">
-						{channel.title}
-					</span>
-				</button>
-
-				<button
-					onclick={(e) => handleUnsubscribe(channel.link, e)}
-					disabled={isDeleting}
-					data-ellipsis
-					class=" m-0.5 mr-1 flex shrink-0 cursor-pointer items-center justify-center rounded-full p-1 text-accent transition hover:text-tertiary"
-					aria-label="Unsubscribe"
-				>
-					<Ellipsis size={20} />
-				</button>
-			</div>
-		{/each}
+		<ChannelList
+			channels={filteredChannels}
+			settings={true}
+			onChannelDeleted={async () => {
+				await loadChannels();
+			}}
+		/>
 	</div>
 </div>

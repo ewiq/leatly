@@ -4,8 +4,6 @@ import { settings } from '$lib/stores/settings.svelte';
 import type { DBChannel } from '$lib/types/rss';
 
 export async function filterByChannel(channel: DBChannel) {
-	if (!channel.title) return;
-
 	const params = new URLSearchParams();
 	params.set('feed', channel.title);
 

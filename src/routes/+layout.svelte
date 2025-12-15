@@ -12,7 +12,7 @@
 	import { searchbarState } from '$lib/stores/searchbar.svelte';
 	import { currentTime } from '$lib/stores/time.svelte';
 
-	let { children } = $props();
+	let { children, data } = $props();
 
 	let lastScrollY = 0;
 
@@ -93,7 +93,7 @@
 <FeedSyncer />
 
 <main class="m-0 min-h-dvh border-0 bg-background p-0">
-	<Menu {handleNewSubscription} />
+	<Menu {data} {handleNewSubscription} />
 	{@render children()}
 </main>
 

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { LoaderCircle, Plus, Share } from 'lucide-svelte';
+	import { ChevronDown, LoaderCircle, Plus, Share2 } from 'lucide-svelte';
 	import { slide } from 'svelte/transition';
 	import { tick } from 'svelte';
 	import { toastData } from '$lib/stores/toast.svelte';
@@ -9,9 +9,10 @@
 
 	let { onSubscribe } = $props();
 	let subscriptionUrl = $state('');
-	let isFormExpanded = $state(sessionStorage.getItem('isSubButtonExpanded') === 'true');
+	let isFormExpanded = $state(false);
 
-	async function subscribe() {
+	async function subscribe(event: Event) {
+		event.preventDefault();
 		if (!subscriptionUrl.trim()) return;
 		menuState.isSubscriptionLoading = true;
 		toastData.message = '';
@@ -44,7 +45,6 @@
 				toastData.type = 'success';
 				onSubscribe?.(result.data);
 				subscriptionUrl = '';
-				isFormExpanded = false;
 			} else {
 				toastData.message = result.error || 'Failed to subscribe. Please try again.';
 				toastData.type = 'error';
@@ -60,40 +60,48 @@
 
 	function toggleForm() {
 		isFormExpanded = !isFormExpanded;
-		sessionStorage.setItem('isSubButtonExpanded', `${isFormExpanded}`);
 	}
 </script>
 
-<div class="mb-2 flex flex-col space-y-2">
+<div class="mb-1 flex flex-col space-y-2">
 	<div class="flex flex-row items-center justify-between gap-2">
 		<button
 			onclick={toggleForm}
-			class="flex cursor-pointer items-center rounded-lg border border-muted bg-background py-1 text-base text-content transition hover:bg-secondary"
+			class="font-hepta flex h-10 w-30 cursor-pointer items-center justify-between rounded-full border border-muted px-3 text-sm text-content shadow transition hover:bg-secondary md:border-0 md:shadow-none"
 		>
-			<div class="flex flex-row items-center gap-1 pr-3 pl-1.5 text-sm">
-				<div class="flex h-7 w-7 shrink-0 items-center justify-center rounded text-tertiary">
-					<Plus size={20} class="text-primary" />
-				</div>
-				<span>Add new </span>
-			</div>
+			<div class=" w-full text-center">add new</div>
+
+			{#if isFormExpanded}
+				<ChevronDown
+					size={20}
+					class="h-5 w-5 transition-transform duration-200 {isFormExpanded
+						? 'rotate-180'
+						: 'rotate-0'}"
+				/>
+			{:else}
+				<Plus
+					size={20}
+					class="h-5 w-5 text-content/60 transition-transform duration-200 {isFormExpanded
+						? 'rotate-180'
+						: 'rotate-0'}"
+				/>
+			{/if}
 		</button>
 
 		<!-- TODO generate link to share custom leatly -->
 		<button
 			onclick={() => {}}
-			class="flex cursor-pointer items-center justify-center rounded-lg bg-accent-button py-1 text-surface transition hover:bg-content disabled:opacity-50"
+			class="font-hepta flex h-10 min-w-24 cursor-pointer items-center justify-around rounded-full border border-muted bg-accent-button px-3 py-1.5 text-[13px] text-surface transition hover:bg-content disabled:opacity-50"
 		>
-			<div class="flex flex-row items-center gap-1 pr-1.5 pl-3 text-sm">
-				<span>Share my leatly</span>
-				<div class="flex h-7 w-7 shrink-0 items-center justify-center rounded">
-					<Share size={20} />
-				</div>
+			share
+			<div class="flex h-5 w-5 shrink-0 items-center justify-center rounded">
+				<Share2 size={16} />
 			</div>
 		</button>
 	</div>
 
 	{#if isFormExpanded}
-		<form onsubmit={subscribe} transition:slide={{ duration: 150 }}>
+		<form onsubmit={(e) => subscribe(e)} transition:slide={{ duration: 150 }}>
 			<div class="relative flex items-center">
 				<input
 					id="subscriptionUrl"
@@ -104,7 +112,6 @@
 				/>
 			</div>
 			<button
-				onclick={subscribe}
 				disabled={menuState.isSubscriptionLoading}
 				class="mt-2 flex min-h-10 w-full cursor-pointer items-center justify-center rounded-lg bg-accent-button py-2 text-sm font-medium text-surface transition hover:bg-content disabled:opacity-50"
 			>

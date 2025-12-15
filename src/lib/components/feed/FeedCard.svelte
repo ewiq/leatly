@@ -7,6 +7,7 @@
 	import { currentTime } from '$lib/stores/time.svelte';
 	import { slide } from 'svelte/transition';
 	import { settings } from '$lib/stores/settings.svelte';
+	import { feed } from '$lib/stores/feed.svelte';
 
 	let {
 		item,
@@ -76,7 +77,7 @@
 </script>
 
 <article
-	transition:slide={{ duration: 150 }}
+	out:slide={{ duration: feed.isItemClosing ? 150 : 0 }}
 	bind:this={feedCardElement}
 	class="flex max-h-[85vh] snap-start flex-col overflow-hidden rounded-xl border border-muted bg-surface shadow-sm transition lg:max-h-[70vh] {menuState.isMenuHidden
 		? 'scroll-mt-2'

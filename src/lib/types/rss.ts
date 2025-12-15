@@ -35,7 +35,6 @@ export interface NormalizedRSSItem {
 	category?: string | string[];
 	image?: string;
 	guid?: string;
-	// New fields for Frontend discrimination
 	type: 'article' | 'video' | 'short';
 	youtube?: YouTubeMetadata;
 }
@@ -45,7 +44,6 @@ export interface NormalizedRSSFeed {
 	items: NormalizedRSSItem[];
 }
 
-// API Response types
 export interface RSSFeedSuccessResponse {
 	success: true;
 	data: NormalizedRSSFeed;
@@ -60,9 +58,18 @@ export interface RSSFeedErrorResponse {
 
 export type RSSFeedResponse = RSSFeedSuccessResponse | RSSFeedErrorResponse;
 
+export interface DBCollection {
+	id: string;
+	name: string;
+	createdAt: number;
+}
+
 export interface DBChannel extends NormalizedRSSChannel {
 	savedAt: number;
 	feedUrl: string;
+	collectionIds: string[];
+	hideOnMainFeed: boolean;
+	customTitle?: string;
 }
 
 export interface DBItem extends NormalizedRSSItem {
@@ -84,6 +91,11 @@ export interface RSSDatabase extends DBSchema {
 		key: string;
 		value: DBItem;
 		indexes: { 'by-channel': string; 'by-date': string };
+	};
+	// New Store
+	collections: {
+		key: string;
+		value: DBCollection;
 	};
 }
 

@@ -1,5 +1,11 @@
 import { openDB, type IDBPDatabase } from 'idb';
-import type { DBChannel, DBItem, NormalizedRSSFeed, RSSDatabase } from '$lib/types/rss';
+import type {
+	DBChannel,
+	DBCollection,
+	DBItem,
+	NormalizedRSSFeed,
+	RSSDatabase
+} from '$lib/types/rss';
 import { generateItemId } from '$lib/utils/itemId';
 import { normalizeText } from '$lib/utils/searchUtils';
 
@@ -19,6 +25,11 @@ export async function getDB(): Promise<IDBPDatabase<RSSDatabase>> {
 				const itemStore = db.createObjectStore('items', { keyPath: 'id' });
 				itemStore.createIndex('by-channel', 'channelId');
 			}
+
+			// Create Collections Store
+			if (!db.objectStoreNames.contains('collections')) {
+				db.createObjectStore('collections', { keyPath: 'id' });
+			}
 		}
 	});
 }
@@ -32,12 +43,20 @@ export async function saveFeedToDB(feed: NormalizedRSSFeed, sourceUrl: string) {
 	const timestamp = Date.now();
 	const channelId = feed.data.link;
 
-	// --- Save Channel ---
-	await channelStore.put({
+	const existingChannel = await channelStore.get(channelId);
+
+	// Preserve user settings
+	const updatedChannel: DBChannel = {
 		...feed.data,
 		savedAt: timestamp,
-		feedUrl: sourceUrl
-	});
+		feedUrl: sourceUrl,
+		collectionIds: existingChannel?.collectionIds ?? [],
+		hideOnMainFeed: existingChannel?.hideOnMainFeed ?? false,
+		customTitle: existingChannel?.customTitle
+	};
+
+	// Save Channel
+	await channelStore.put(updatedChannel);
 
 	// --- Save Items (Upsert Strategy)---
 	const operations = feed.items.map(async (item) => {
@@ -58,9 +77,7 @@ export async function saveFeedToDB(feed: NormalizedRSSFeed, sourceUrl: string) {
 			};
 			return itemStore.put(newItem);
 		} else {
-			// UPDATE: Existing Item
-			// We recognize this item (same GUID/Link), but the title might be fixed.
-
+			// Update if existing but content has changed
 			const hasContentChanged =
 				existingItem.title !== item.title ||
 				existingItem.description !== item.description ||
@@ -129,6 +146,96 @@ export async function updateItem(itemId: string, updates: Partial<DBItem>) {
 		await store.put(updatedItem);
 	}
 	await tx.done;
+}
+
+// --- Collection Management ---
+export async function getAllCollections(): Promise<DBCollection[]> {
+	const db = await getDB();
+	return db.getAll('collections');
+}
+
+export async function createCollection(name: string) {
+	const db = await getDB();
+	const newCollection: DBCollection = {
+		id: crypto.randomUUID(),
+		name,
+		createdAt: Date.now()
+	};
+	await db.put('collections', newCollection);
+}
+
+export async function deleteCollection(collectionId: string) {
+	const db = await getDB();
+	const tx = db.transaction(['collections', 'channels'], 'readwrite');
+
+	await tx.objectStore('collections').delete(collectionId);
+
+	const channelStore = tx.objectStore('channels');
+	let cursor = await channelStore.openCursor();
+
+	while (cursor) {
+		const channel = cursor.value;
+		if (channel.collectionIds && channel.collectionIds.includes(collectionId)) {
+			const updatedChannel = {
+				...channel,
+				collectionIds: channel.collectionIds.filter((id) => id !== collectionId)
+			};
+			await cursor.update(updatedChannel);
+		}
+		cursor = await cursor.continue();
+	}
+
+	await tx.done;
+}
+
+// --- Channel Metadata Management ---
+export async function updateChannelSettings(
+	channelId: string,
+	updates: {
+		customTitle?: string;
+		hideOnMainFeed?: boolean;
+		collectionIds?: string[];
+	}
+) {
+	const db = await getDB();
+	const tx = db.transaction('channels', 'readwrite');
+	const store = tx.objectStore('channels');
+
+	const channel = await store.get(channelId);
+	if (channel) {
+		// Apply updates, fallback to existing if undefined
+		const updatedChannel: DBChannel = {
+			...channel,
+			customTitle: updates.customTitle !== undefined ? updates.customTitle : channel.customTitle,
+			hideOnMainFeed:
+				updates.hideOnMainFeed !== undefined ? updates.hideOnMainFeed : channel.hideOnMainFeed,
+			collectionIds:
+				updates.collectionIds !== undefined ? updates.collectionIds : channel.collectionIds || []
+		};
+
+		await store.put(updatedChannel);
+	}
+	await tx.done;
+}
+
+export async function toggleChannelCollection(
+	channelId: string,
+	collectionId: string,
+	addToCollection: boolean
+) {
+	const db = await getDB();
+	const channel = await db.get('channels', channelId);
+
+	if (channel) {
+		const currentCollections = new Set(channel.collectionIds || []);
+		if (addToCollection) {
+			currentCollections.add(collectionId);
+		} else {
+			currentCollections.delete(collectionId);
+		}
+
+		await updateChannelSettings(channelId, { collectionIds: Array.from(currentCollections) });
+	}
 }
 
 function createSearchTokens(item: any): string {
