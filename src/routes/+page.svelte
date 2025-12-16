@@ -125,19 +125,34 @@
 		}
 	}
 
-	async function handleAddToRead(itemId: string) {
+	async function markAsRead(itemId: string) {
+		const item = allItems.find((item) => item.id === itemId);
+		if (!item) {
+			console.error('Item not found');
+			return;
+		}
+		// Only mark as read if not already read
+		if (!item.read) {
+			try {
+				await updateItem(itemId, { read: true });
+				allItems = allItems.map((i) => (i.id === itemId ? { ...i, read: true } : i));
+			} catch (e) {
+				console.error('Failed to mark as read', e);
+			}
+		}
+	}
+
+	async function markAsUnread(itemId: string) {
 		const item = allItems.find((item) => item.id === itemId);
 		if (!item) {
 			console.error('Item not found');
 			return;
 		}
 		try {
-			const newReadStatus = !item.read;
-			await updateItem(itemId, { read: newReadStatus });
-
-			allItems = allItems.map((i) => (i.id === itemId ? { ...i, read: newReadStatus } : i));
+			await updateItem(itemId, { read: false });
+			allItems = allItems.map((i) => (i.id === itemId ? { ...i, read: false } : i));
 		} catch (e) {
-			console.error('Failed to update favourite status', e);
+			console.error('Failed to mark as unread', e);
 		}
 	}
 
@@ -196,7 +211,8 @@
 				onScrollComplete={() => (isKeyboardScrolling = false)}
 				onClose={handleCloseItem}
 				onAddToFavourite={handleAddToFavourites}
-				onAddToRead={handleAddToRead}
+				onMarkAsRead={markAsRead}
+				onMarkAsUnread={markAsUnread}
 			/>
 		{/each}
 	</div>

@@ -1,6 +1,6 @@
 <script lang="ts">
 	import Logo from '$lib/assets/logo.png';
-	import SettingsDropdown from './settings-dropdown/SettingsDropdown.svelte';
+	import SettingsDropdown from './settings-dropdown/SettingsMenu.svelte';
 	import { ChevronDown } from 'lucide-svelte';
 	import { settings } from '$lib/stores/settings.svelte';
 	import { menuState } from '$lib/stores/menu.svelte';
@@ -8,7 +8,7 @@
 	import { formatDateTime } from '$lib/utils/dateUtils';
 	import { searchbarState } from '$lib/stores/searchbar.svelte';
 	import { currentTime } from '$lib/stores/time.svelte';
-	import MySubsDropdown from './my-subs-dropdown/MySubsDropdown.svelte';
+	import MySubsDropdown from './my-subs-dropdown/MySubsMenu.svelte';
 	import { slide } from 'svelte/transition';
 
 	let { handleNewSubscription, data } = $props();

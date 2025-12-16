@@ -1,0 +1,166 @@
+<script lang="ts">
+	import { invalidate } from '$app/navigation';
+	import { updateChannelSettings } from '$lib/db/db';
+	import { toastData } from '$lib/stores/toast.svelte';
+	import type { DBChannel } from '$lib/types/rss';
+	import { filterByChannel } from '$lib/utils/filterByChannel';
+	import { Ellipsis, HashIcon, ChevronRight } from 'lucide-svelte';
+	import { slide } from 'svelte/transition';
+	import ChannelDropdown from './ChannelDropdown.svelte';
+
+	let {
+		channel,
+		settings = false,
+		onChannelDeleted,
+		// Orchestration props
+		isEditing,
+		isDropdownOpen,
+		onSetEditingId,
+		onSetDropdownId
+	}: {
+		channel: DBChannel;
+		settings?: Boolean;
+		onChannelDeleted?: () => Promise<void>;
+		isEditing: boolean;
+		isDropdownOpen: boolean;
+		onSetEditingId: (id: string | null) => void;
+		onSetDropdownId: (id: string | null) => void;
+	} = $props();
+
+	let editingTitle = $state('');
+	let dropdownButtonElement = $state<HTMLButtonElement | null>(null);
+
+	// Shared styling to ensure exact same dimensions in both modes
+	const rowBaseClasses =
+		'flex min-w-0 grow items-center gap-2 rounded-lg py-1.5 pr-2 pl-2 transition-colors';
+
+	// Initialize edit state when entering edit mode
+	$effect(() => {
+		if (isEditing && editingTitle === '') {
+			editingTitle = channel.customTitle || channel.title;
+		}
+	});
+
+	function handleStartRename() {
+		editingTitle = channel.customTitle || channel.title;
+		onSetDropdownId(null); // Close dropdown
+		onSetEditingId(channel.link);
+	}
+
+	function handleCancelRename(event: Event) {
+		event.stopPropagation();
+		onSetEditingId(null);
+		editingTitle = '';
+	}
+
+	async function handleSaveRename() {
+		if (!editingTitle.trim()) {
+			handleCancelRename(new Event('cancel'));
+			return;
+		}
+
+		try {
+			await updateChannelSettings(channel.link, { customTitle: editingTitle.trim() });
+			await invalidate('app:feed');
+			toastData.message = 'Channel renamed';
+			toastData.type = 'success';
+		} catch (error) {
+			console.error('Failed to rename channel', error);
+			toastData.message = 'Failed to rename channel';
+			toastData.type = 'error';
+		} finally {
+			onSetEditingId(null);
+			editingTitle = '';
+		}
+	}
+
+	function handleDropdownToggle(event: Event) {
+		event.stopPropagation();
+		if (isDropdownOpen) {
+			onSetDropdownId(null);
+		} else {
+			onSetDropdownId(channel.link);
+		}
+	}
+</script>
+
+<div class="flex items-center" transition:slide={{ duration: 200 }}>
+	{#if isEditing}
+		<div class="flex min-w-0 grow items-center gap-2 rounded-lg py-1 pr-2 pl-2 transition-colors">
+			<div class="flex h-6 w-6 shrink-0 items-center justify-center rounded text-tertiary">
+				{#if channel.image}
+					<img
+						src={channel.image}
+						alt={channel.title}
+						class="h-full w-full scale-90 rounded object-cover"
+					/>
+				{:else}
+					<HashIcon size={16} />
+				{/if}
+			</div>
+
+			<input
+				type="text"
+				bind:value={editingTitle}
+				class="-ml-1 h-full min-w-0 grow rounded bg-secondary px-1 text-sm text-content outline-none"
+				onkeydown={(e) => {
+					if (e.key === 'Enter') handleSaveRename();
+					if (e.key === 'Escape') handleCancelRename(e);
+				}}
+				onclick={(e) => e.stopPropagation()}
+				autofocus
+			/>
+
+			<button
+				onclick={handleSaveRename}
+				class="flex shrink-0 cursor-pointer items-center justify-center rounded-lg p-1 text-primary transition hover:bg-secondary"
+				aria-label="Save rename"
+			>
+				<ChevronRight size={20} />
+			</button>
+		</div>
+	{:else}
+		<button
+			onclick={() => filterByChannel(channel)}
+			class="flex min-w-0 grow cursor-pointer items-center gap-2 rounded-lg py-1.5 pr-2 pl-2 text-left text-sm text-accent transition-colors hover:bg-secondary"
+		>
+			<div class="flex h-6 w-6 shrink-0 items-center justify-center rounded text-tertiary">
+				{#if channel.image}
+					<img
+						src={channel.image}
+						alt={channel.title}
+						class="h-full w-full scale-90 rounded object-cover"
+					/>
+				{:else}
+					<HashIcon size={16} />
+				{/if}
+			</div>
+			<span class="block min-w-0 truncate">
+				{channel.customTitle || channel.title}
+			</span>
+		</button>
+	{/if}
+
+	{#if settings && !isEditing}
+		<div class="relative">
+			<button
+				bind:this={dropdownButtonElement}
+				onclick={handleDropdownToggle}
+				class="flex shrink-0 cursor-pointer items-center justify-center rounded-lg p-2 text-accent transition hover:bg-secondary hover:text-tertiary"
+				aria-label="Channel options"
+			>
+				<Ellipsis size={20} />
+			</button>
+
+			{#if isDropdownOpen}
+				<ChannelDropdown
+					{channel}
+					triggerElement={dropdownButtonElement}
+					{onChannelDeleted}
+					onRenameRequest={handleStartRename}
+					onClose={() => onSetDropdownId(null)}
+				/>
+			{/if}
+		</div>
+	{/if}
+</div>

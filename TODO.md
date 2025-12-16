@@ -1,13 +1,8 @@
 ### NEXT
 
-- Share my leatlet button - visible if at least subbed to 5 channels
-- Add MySubsMenu open state to localstorage
-- Restyle Toast.svelte
 - Correct error where duplicates if link changed, but not title, pubdate, desc, author ?
 - Add collection goto filter
 - Correct feed goto: by xml URL
-- Add rename channel functionality
-- Add height limits to collections (individually and whole section too)
 - Add snap-scroll to syncing FeedHeader too
 - Correct feedcard - add slide transition when favourite bookmark off to
 

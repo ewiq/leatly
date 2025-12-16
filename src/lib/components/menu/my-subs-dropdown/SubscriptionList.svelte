@@ -97,8 +97,8 @@
 	</button>
 
 	{#if isExpanded}
-		<div class="mt-2 flex flex-col" transition:slide={{ duration: 150 }}>
-			<div class="mb-1 flex items-center gap-2 px-4">
+		<div class="mt-2 flex min-h-0 flex-col" transition:slide={{ duration: 150 }}>
+			<div class="mb-1 flex shrink-0 items-center gap-2 px-4">
 				<div class="relative flex-1">
 					<div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
 						<Search class="h-4 w-4 text-tertiary" />
@@ -145,15 +145,17 @@
 				/>
 			</div>
 
-			<div class="border-t border-b border-muted px-4 py-2">
-				<button
-					onclick={() => {}}
-					class="m-auto flex w-54 cursor-pointer items-center justify-center gap-2 rounded-lg border border-muted bg-primary/60 px-4 py-2.5 text-sm text-content transition hover:bg-secondary"
-				>
-					<Share2 size={16} />
-					<span>Share my Leatly</span>
-				</button>
-			</div>
+			{#if subscribedChannels.length >= 5}
+				<div class="shrink-0 border-t border-b border-muted px-4 py-2">
+					<button
+						onclick={() => {}}
+						class="m-auto flex w-54 cursor-pointer items-center justify-center gap-2 rounded-lg border border-muted bg-primary/60 px-4 py-2.5 text-sm text-content transition hover:bg-secondary"
+					>
+						<Share2 size={16} />
+						<span>Share my Leatly</span>
+					</button>
+				</div>
+			{/if}
 		</div>
 	{/if}
 </div>

@@ -189,7 +189,7 @@
 				</div>
 			{/if}
 
-			<div class="space-y-1">
+			<div>
 				{#each sortedCollections as collection (collection.id)}
 					{@const collectionChannels = getCollectionChannels(collection.id)}
 

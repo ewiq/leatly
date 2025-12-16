@@ -11,6 +11,7 @@
 	import { lockScroll, trackDeviceState, unlockScroll } from '$lib/utils/uiUtils';
 	import { searchbarState } from '$lib/stores/searchbar.svelte';
 	import { currentTime } from '$lib/stores/time.svelte';
+	import { initializeMySubsMenu } from '$lib/stores/mySubsMenu.svelte.js';
 
 	let { children, data } = $props();
 
@@ -60,6 +61,7 @@
 	$effect(() => {
 		const stopTime = currentTime.startUpdating();
 		initializeSettings();
+		initializeMySubsMenu();
 		const stopDevice = trackDeviceState();
 		window.addEventListener('scroll', handleScroll, { passive: true });
 

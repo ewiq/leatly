@@ -17,7 +17,8 @@
 		onScrollComplete = () => {},
 		onClose = () => {},
 		onAddToFavourite = () => {},
-		onAddToRead = () => {}
+		onMarkAsRead = () => {},
+		onMarkAsUnread = () => {}
 	}: {
 		item: UIItem;
 		focused?: boolean;
@@ -27,7 +28,8 @@
 		onScrollComplete?: () => void;
 		onClose?: (itemId: string) => void;
 		onAddToFavourite?: (itemId: string) => void;
-		onAddToRead?: (itemId: string) => void;
+		onMarkAsRead?: (itemId: string) => void;
+		onMarkAsUnread?: (itemId: string) => void;
 	} = $props();
 
 	let publishedDate = $derived.by(() => {
@@ -103,7 +105,7 @@
 			</div>
 			{#if item.read === true && settings.isReadHidden}
 				<button
-					onclick={() => onAddToRead(item.id)}
+					onclick={() => onMarkAsUnread(item.id)}
 					class="group relative cursor-pointer rounded-full p-2 text-content opacity-50 transition hover:bg-secondary hover:text-primary"
 					title="Mark as Unread"
 				>
@@ -119,7 +121,7 @@
 	{/if}
 	<div class="shrink-0 px-5 py-2">
 		<a
-			onclick={() => onAddToRead(item.id)}
+			onclick={() => onMarkAsRead(item.id)}
 			href={item.link}
 			target="_blank"
 			rel="noopener noreferrer"
