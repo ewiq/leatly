@@ -1,7 +1,7 @@
 ### NEXT
 
 - OPTIMIZE +layout.ts to load items only slices
-- Move filtering logic to +layout.ts (?) when loading data
+- Move filtering logic to db.ts when loading data
 
 - Optimize syncing - only when on main feed - and on top of page - no sync when Subs dropdown is s
 - Correct bug where syncing time get registered in local storage upon unsuccesful sync
@@ -16,7 +16,6 @@
 - Refresh itemIndex after sync for correct keyboard navigation
 - Handle items with invalid date and no pubDate whatsoever in source xml
 - Navigation correction: ensure scroll: top beforenavigate also works on main feed
-- Bug where syncing data -> updating feed while SubsMenu is open would cause a jumpscroll and glitch.
 
 ### LATER
 

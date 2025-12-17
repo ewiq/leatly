@@ -1,3 +1,4 @@
+import { mobileKeyboard } from '$lib/stores/mobileKeyboard.svelte';
 import { settings } from '$lib/stores/settings.svelte';
 
 export function trackDeviceState() {
@@ -39,5 +40,23 @@ export function extractDomain(url: string): string {
 		return hostname;
 	} catch {
 		return '';
+	}
+}
+
+export function handleFocus(e: FocusEvent) {
+	if (
+		(settings.isMobile && e.target instanceof HTMLInputElement) ||
+		e.target instanceof HTMLTextAreaElement
+	) {
+		mobileKeyboard.isKeyboardOpen = true;
+	}
+}
+
+export function handleBlur(e: FocusEvent) {
+	if (
+		(settings.isMobile && e.target instanceof HTMLInputElement) ||
+		e.target instanceof HTMLTextAreaElement
+	) {
+		mobileKeyboard.isKeyboardOpen = false;
 	}
 }

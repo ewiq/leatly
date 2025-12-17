@@ -3,6 +3,7 @@
 	import AddNewSub from './AddNewSub.svelte';
 	import Collections from './Collections.svelte';
 	import { mySubsMenu } from '$lib/stores/mySubsMenu.svelte';
+	import { mobileKeyboard } from '$lib/stores/mobileKeyboard.svelte';
 
 	let { onSubscribe, data } = $props();
 </script>
@@ -14,7 +15,10 @@
 		onToggle={() => mySubsMenu.toggleSection('add')}
 	/>
 
-	<div class="min-h-0 grow overflow-auto">
+	<div
+		class="flex min-h-0 grow flex-col
+      {mobileKeyboard.isKeyboardOpen ? '' : 'overflow-y-auto'}"
+	>
 		<SubscriptionList
 			isExpanded={mySubsMenu.expandedSection === 'subs'}
 			onToggle={() => mySubsMenu.toggleSection('subs')}

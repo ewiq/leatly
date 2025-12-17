@@ -145,7 +145,7 @@
 			<button
 				onclick={() => onAddToFavourite(item.id)}
 				class="cursor-pointer rounded-full p-2 text-content transition hover:bg-secondary hover:text-primary {item.favourite
-					? ' bg-secondary '
+					? '  '
 					: 'text-content'}"
 				title="Save to Favourites"
 			>

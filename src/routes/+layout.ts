@@ -1,5 +1,3 @@
-// src/routes/+layout.ts
-
 import { getAllItems, getAllChannels, getAllCollections } from '$lib/db/db';
 import type { LayoutLoad } from './$types';
 import type { UIItem, DBChannel } from '$lib/types/rss';

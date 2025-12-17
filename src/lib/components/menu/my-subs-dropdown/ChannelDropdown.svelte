@@ -88,6 +88,7 @@
 			await updateChannelSettings(channel.link, { hideOnMainFeed: newHideState });
 			await invalidate('app:feed');
 		} catch (error) {}
+		onClose();
 	}
 
 	async function handleCopyUrl(event: Event) {
@@ -120,7 +121,7 @@
 			toastData.type = 'error';
 		} finally {
 			isDeleting = false;
-			onClose(); // Close dropdown after delete (though component might unmount)
+			onClose();
 		}
 	}
 </script>

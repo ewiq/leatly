@@ -9,6 +9,7 @@
 	import { createCollection, deleteCollection, getAllChannels } from '$lib/db/db';
 	import type { DBChannel, DBCollection } from '$lib/types/rss';
 	import ChannelList from './ChannelList.svelte';
+	import { clickOutside } from '$lib/utils/clickOutside';
 
 	interface Props {
 		collections: Array<{
@@ -25,6 +26,7 @@
 	let openCollectionId = $state<string | null>(null);
 	let showNewCollectionInput = $state(false);
 	let newCollectionName = $state('');
+	let newCollectionInputElement: HTMLDivElement | null = $state(null);
 	let collectionJustCreated = $state(false);
 	let allChannels = $state<DBChannel[]>([]);
 
@@ -122,8 +124,11 @@
 </script>
 
 <div class="flex flex-col border-b border-muted">
-	<button
+	<div
+		role="button"
+		tabindex="0"
 		onclick={onToggle}
+		onkeydown={(e) => e.key === 'Enter' && onToggle()}
 		class="flex w-full cursor-pointer items-center justify-between px-4 py-3 transition hover:bg-secondary/50"
 	>
 		<div class="flex items-center gap-2.5">
@@ -149,7 +154,7 @@
 				class="text-tertiary transition-transform duration-200 {isExpanded ? 'rotate-180' : ''}"
 			/>
 		</div>
-	</button>
+	</div>
 
 	{#if isExpanded}
 		<div
@@ -158,6 +163,8 @@
 		>
 			{#if showNewCollectionInput}
 				<div
+					bind:this={newCollectionInputElement}
+					use:clickOutside={() => cancelAddingCollection()}
 					class="flex items-center gap-1 rounded-lg bg-secondary/50 py-1 pr-0.5 pl-3"
 					transition:slide={{ duration: collectionJustCreated ? 0 : 150 }}
 				>

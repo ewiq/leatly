@@ -3,12 +3,17 @@
 	import Toast from '$lib/components/toast/Toast.svelte';
 	import Menu from '$lib/components/menu/Menu.svelte';
 	import FeedSyncer from '$lib/components/feed/FeedSyncer.svelte';
-
 	import { toastData } from '$lib/stores/toast.svelte';
 	import { invalidate } from '$app/navigation';
 	import { initializeSettings, settings } from '$lib/stores/settings.svelte';
 	import { menuState } from '$lib/stores/menu.svelte';
-	import { lockScroll, trackDeviceState, unlockScroll } from '$lib/utils/uiUtils';
+	import {
+		handleBlur,
+		handleFocus,
+		lockScroll,
+		trackDeviceState,
+		unlockScroll
+	} from '$lib/utils/uiUtils';
 	import { searchbarState } from '$lib/stores/searchbar.svelte';
 	import { currentTime } from '$lib/stores/time.svelte';
 	import { initializeMySubsMenu } from '$lib/stores/mySubsMenu.svelte.js';
@@ -27,7 +32,7 @@
 		const scrollDelta = currentScrollY - lastScrollY;
 
 		// Always show menu at very top
-		if (currentScrollY < 50) {
+		if (currentScrollY < 150) {
 			menuState.isMenuHidden = false;
 			lastScrollY = currentScrollY;
 			return;
@@ -72,7 +77,7 @@
 		};
 	});
 
-	// Mobile Scroll Lock Effect
+	// Mobile Scroll Lock on MySubsMenu
 	$effect(() => {
 		if (settings.isMobile && menuState.isSubsMenuOpen) {
 			lockScroll();
@@ -85,7 +90,7 @@
 	});
 </script>
 
-<svelte:window onkeydown={handleGlobalKeydown} />
+<svelte:window onkeydown={handleGlobalKeydown} onfocusin={handleFocus} onfocusout={handleBlur} />
 
 <svelte:head>
 	<link rel="icon" href="/assets/logo.png" />

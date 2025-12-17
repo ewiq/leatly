@@ -90,7 +90,10 @@ export interface RSSDatabase extends DBSchema {
 	items: {
 		key: string;
 		value: DBItem;
-		indexes: { 'by-channel': string; 'by-date': string };
+		indexes: {
+			'by-channel': string;
+			'by-date': string;
+		};
 	};
 	// New Store
 	collections: {

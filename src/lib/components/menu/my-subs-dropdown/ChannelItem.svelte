@@ -6,12 +6,12 @@
 	import { Ellipsis, HashIcon, ChevronRight } from 'lucide-svelte';
 	import { slide } from 'svelte/transition';
 	import ChannelDropdown from './ChannelDropdown.svelte';
+	import { clickOutside } from '$lib/utils/clickOutside';
 
 	let {
 		channel,
 		settings = false,
 		onChannelDeleted,
-		// Orchestration props
 		isEditing,
 		isDropdownOpen,
 		onSetEditingId,
@@ -26,14 +26,19 @@
 		onSetDropdownId: (id: string | null) => void;
 	} = $props();
 
+	let previousIsEditing = $state(false);
 	let editingTitle = $state('');
+	let editInputElement: HTMLInputElement | null = $state(null);
 	let dropdownButtonElement = $state<HTMLButtonElement | null>(null);
+	let editContainerElement = $state<HTMLDivElement | null>(null);
 
 	// Initialize edit state when entering edit mode
 	$effect(() => {
-		if (isEditing && editingTitle === '') {
+		if (isEditing && !previousIsEditing) {
 			editingTitle = channel.customTitle || channel.title;
+			editInputElement?.focus();
 		}
+		previousIsEditing = isEditing;
 	});
 
 	function handleStartRename() {
@@ -42,15 +47,14 @@
 		onSetEditingId(channel.link);
 	}
 
-	function handleCancelRename(event: Event) {
-		event.stopPropagation();
+	function handleCancelRename() {
 		onSetEditingId(null);
 		editingTitle = '';
 	}
 
 	async function handleSaveRename() {
 		if (!editingTitle.trim()) {
-			handleCancelRename(new Event('cancel'));
+			handleCancelRename();
 			return;
 		}
 
@@ -78,6 +82,8 @@
 <div class="flex items-center" transition:slide={{ duration: 200 }}>
 	{#if isEditing}
 		<div
+			bind:this={editContainerElement}
+			use:clickOutside={handleCancelRename}
 			class="flex min-w-0 grow items-center gap-2 rounded-lg py-1 pr-2 pl-2 transition-colors {channel.hideOnMainFeed
 				? 'opacity-60'
 				: ''}"
@@ -97,13 +103,14 @@
 			<input
 				type="text"
 				bind:value={editingTitle}
+				bind:this={editInputElement}
 				class="-ml-1 h-full min-w-0 grow rounded bg-secondary px-1 text-sm text-content outline-none"
 				onkeydown={(e) => {
+					e.stopPropagation();
 					if (e.key === 'Enter') handleSaveRename();
-					if (e.key === 'Escape') handleCancelRename(e);
+					if (e.key === 'Escape') handleCancelRename();
 				}}
 				onclick={(e) => e.stopPropagation()}
-				autofocus
 			/>
 
 			<button
