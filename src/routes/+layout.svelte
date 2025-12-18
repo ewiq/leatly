@@ -7,16 +7,11 @@
 	import { invalidate } from '$app/navigation';
 	import { initializeSettings, settings } from '$lib/stores/settings.svelte';
 	import { menuState } from '$lib/stores/menu.svelte';
-	import {
-		handleBlur,
-		handleFocus,
-		lockScroll,
-		trackDeviceState,
-		unlockScroll
-	} from '$lib/utils/uiUtils';
+	import { lockScroll, trackDeviceState, unlockScroll } from '$lib/utils/uiUtils';
 	import { searchbarState } from '$lib/stores/searchbar.svelte';
 	import { currentTime } from '$lib/stores/time.svelte';
 	import { initializeMySubsMenu } from '$lib/stores/mySubsMenu.svelte.js';
+	import { trackMobileKeyboard } from '$lib/stores/mobileKeyboard.svelte.js';
 
 	let { children, data } = $props();
 
@@ -67,12 +62,17 @@
 		const stopTime = currentTime.startUpdating();
 		initializeSettings();
 		initializeMySubsMenu();
+
 		const stopDevice = trackDeviceState();
+		const stopKeyboard = trackMobileKeyboard();
+
 		window.addEventListener('scroll', handleScroll, { passive: true });
 
 		return () => {
 			stopDevice();
 			stopTime();
+			stopKeyboard();
+
 			window.removeEventListener('scroll', handleScroll);
 		};
 	});
@@ -90,7 +90,7 @@
 	});
 </script>
 
-<svelte:window onkeydown={handleGlobalKeydown} onfocusin={handleFocus} onfocusout={handleBlur} />
+<svelte:window onkeydown={handleGlobalKeydown} />
 
 <svelte:head>
 	<link rel="icon" href="/assets/logo.png" />

@@ -42,21 +42,3 @@ export function extractDomain(url: string): string {
 		return '';
 	}
 }
-
-export function handleFocus(e: FocusEvent) {
-	if (
-		(settings.isMobile && e.target instanceof HTMLInputElement) ||
-		e.target instanceof HTMLTextAreaElement
-	) {
-		mobileKeyboard.isKeyboardOpen = true;
-	}
-}
-
-export function handleBlur(e: FocusEvent) {
-	if (
-		(settings.isMobile && e.target instanceof HTMLInputElement) ||
-		e.target instanceof HTMLTextAreaElement
-	) {
-		mobileKeyboard.isKeyboardOpen = false;
-	}
-}

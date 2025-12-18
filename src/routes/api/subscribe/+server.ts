@@ -137,18 +137,28 @@ function extractImageFromItem(item: any): string | undefined {
 			if (imageMedia?.['@_url']) return imageMedia['@_url'];
 		}
 	}
-	// Enclosure
-	if (item.enclosure && item.enclosure['@_type']?.startsWith('image/')) {
-		return item.enclosure['@_url'];
+
+	// Enclosure Handle both single object and array
+	if (item.enclosure) {
+		const enclosures = Array.isArray(item.enclosure) ? item.enclosure : [item.enclosure];
+
+		const imageEnclosure = enclosures.find((enc: any) => enc['@_type']?.startsWith('image/'));
+
+		if (imageEnclosure?.['@_url']) {
+			return imageEnclosure['@_url'];
+		}
 	}
+
 	// Media Thumbnail
 	if (item['media:thumbnail']?.['@_url']) {
 		return item['media:thumbnail']['@_url'];
 	}
+
 	// iTunes
 	if (item['itunes:image']?.['@_href']) {
 		return item['itunes:image']['@_href'];
 	}
+
 	// HTML Description scrape
 	if (item.description) {
 		const desc = extractText(item.description);

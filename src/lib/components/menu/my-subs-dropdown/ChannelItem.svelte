@@ -7,7 +7,7 @@
 	import { slide } from 'svelte/transition';
 	import ChannelDropdown from './ChannelDropdown.svelte';
 	import { clickOutside } from '$lib/utils/clickOutside';
-	import { scrollToView } from '$lib/utils/scrollToView';
+	import { scrollToView } from '$lib/stores/mobileKeyboard.svelte';
 
 	let {
 		channel,
