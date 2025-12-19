@@ -170,7 +170,7 @@ function extractImageFromItem(item: any): string | undefined {
 }
 
 // --- Main Normalizer (Standard RSS/Atom) ---
-function normalizeRSSFeed(parsedData: any): NormalizedRSSFeed {
+function normalizeRSSFeed(parsedData: any, feedUrl: string): NormalizedRSSFeed {
 	// RSS 2.0
 	if (parsedData.rss?.channel) {
 		const data = parsedData.rss.channel;
@@ -181,6 +181,7 @@ function normalizeRSSFeed(parsedData: any): NormalizedRSSFeed {
 				title: extractText(data.title),
 				description: extractText(data.description || data['content:encoded']),
 				link: extractLink(data.link),
+				feedUrl,
 				language: extractText(data.language),
 				pubDate: extractText(data.pubDate),
 				lastBuildDate: extractText(data.lastBuildDate),
@@ -210,6 +211,7 @@ function normalizeRSSFeed(parsedData: any): NormalizedRSSFeed {
 				title: extractText(feed.title),
 				description: extractText(feed.subtitle || feed.description),
 				link: extractLink(feed.link),
+				feedUrl,
 				language: extractText(feed.language),
 				pubDate: extractText(feed.published || feed.updated),
 				lastBuildDate: extractText(feed.updated),
@@ -243,6 +245,7 @@ function normalizeRSSFeed(parsedData: any): NormalizedRSSFeed {
 				title: extractText(channel?.title),
 				description: extractText(channel?.description),
 				link: extractLink(channel?.link),
+				feedUrl,
 				language: extractText(channel?.['dc:language']),
 				pubDate: extractText(channel?.['dc:date']),
 				image: extractImageUrl(channel?.image)
@@ -264,7 +267,7 @@ function normalizeRSSFeed(parsedData: any): NormalizedRSSFeed {
 	}
 
 	return {
-		data: { title: '', description: '', link: '' },
+		data: { title: '', description: '', link: '', feedUrl: '' },
 		items: []
 	};
 }
@@ -392,7 +395,7 @@ async function processSingleFeed(inputUrl: string): Promise<RSSFeedResponse> {
 			const structure = isValidRSSStructure(parsedResult);
 			if (!structure.valid)
 				return { success: false, error: structure.error || 'Invalid Structure' };
-			normalizedFeed = normalizeRSSFeed(parsedResult);
+			normalizedFeed = normalizeRSSFeed(parsedResult, effectiveUrl);
 		}
 
 		// --- INVERTED IMAGE LOGIC ---

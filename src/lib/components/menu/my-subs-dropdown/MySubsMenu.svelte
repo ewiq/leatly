@@ -7,7 +7,6 @@
 	let { onSubscribe, data } = $props();
 </script>
 
-<!--To hide Collections button when keyboard is open !-->
 <div
 	class="flex {mobileKeyboard.isKeyboardOpen
 		? 'h-[calc(100%+44px)]'
@@ -18,14 +17,12 @@
 		isExpanded={mySubsMenu.expandedSection === 'add'}
 		onToggle={() => mySubsMenu.toggleSection('add')}
 	/>
-
 	<div class="flex min-h-0 flex-1 flex-col">
 		<SubscriptionList
 			isExpanded={mySubsMenu.expandedSection === 'subs'}
 			onToggle={() => mySubsMenu.toggleSection('subs')}
 		/>
 	</div>
-
 	<Collections
 		collections={data.collections}
 		isExpanded={mySubsMenu.expandedSection === 'collections'}

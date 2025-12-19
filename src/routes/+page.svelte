@@ -27,7 +27,7 @@
 
 	// Enrich items
 	function enrichItems(rawItems: any[]): UIItem[] {
-		const channelMap = new Map(data.channels.map((c) => [c.link, c]));
+		const channelMap = new Map(data.channels.map((c) => [c.feedUrl, c]));
 
 		return rawItems.map((item) => {
 			const channel = channelMap.get(item.channelId);
@@ -198,7 +198,7 @@
 		</div>
 	{/if}
 
-	{#if sync.hasNewData && !sync.isSyncing && !data.searchQuery && !data.filter.channelId && !data.filter.collectionId}
+	{#if sync.hasNewData && !sync.isSyncing && !data.searchQuery && !data.filter.channelId && !data.filter.collectionId && !data.filter.onlyFavourites}
 		<div
 			class="sticky {menuState.isMenuHidden
 				? 'top-2'

@@ -84,7 +84,7 @@
 						placeholder="Search..."
 						class="w-full rounded-lg border border-muted bg-background py-2 pr-10
                                pl-10 text-content transition-all
-                               placeholder:text-tertiary focus:ring-2
+                               placeholder:text-tertiary focus:ring-1
                                focus:ring-primary focus:outline-none"
 					/>
 					{#if value}

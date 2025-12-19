@@ -31,8 +31,8 @@
 			{channel}
 			{settings}
 			{onChannelDeleted}
-			isEditing={activeEditingId === channel.link}
-			isDropdownOpen={activeDropdownId === channel.link}
+			isEditing={activeEditingId === channel.feedUrl}
+			isDropdownOpen={activeDropdownId === channel.feedUrl}
 			onSetEditingId={handleSetEditingId}
 			onSetDropdownId={handleSetDropdownId}
 		/>

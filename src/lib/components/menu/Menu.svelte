@@ -78,11 +78,11 @@
 				onclick={() => {
 					menuState.toggleSubs();
 				}}
-				class="font-hepta flex h-10 w-30 cursor-pointer items-center justify-between rounded-full border border-muted px-3 text-content shadow transition hover:bg-secondary md:border-0 md:shadow-none"
+				class="flex h-10 w-30 cursor-pointer items-center justify-between rounded-full border border-muted px-3 text-content shadow transition hover:bg-secondary md:border-0 md:shadow-none"
 				aria-label="Subscriptions"
 				aria-expanded={menuState.isSubsMenuOpen}
 			>
-				<div class=" w-full text-center">my subs</div>
+				<div class=" w-full text-center text-base tracking-wider">my subs</div>
 
 				<ChevronDown
 					class="h-5 w-5 transition-transform duration-200 {menuState.isSubsMenuOpen

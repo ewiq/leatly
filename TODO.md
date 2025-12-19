@@ -1,43 +1,32 @@
 ### NEXT
 
-- Automatically close dropdown when 'close clicked'
-- Correct api endpoint to add xml url as key, not input url
-
-Correct syncing errors:
-
-- When user is on top, syncing starts but he scrolls down - detect scrolldown and don't invalidate app:feed - but rather stay 'quiet',
+- Correct positioning channel item dropdown
+- UI enhance: if image, but not loaded, put a loader inside the container
+- Youtube oAuth to import subscribed channels
+- Privacy notice - About page
+- Handle old item deletion (but not favourited)
+- OPML compatibility for imports
 
 ### BUGS
 
-- Handle items with invalid date and no pubDate whatsoever in source xml
 - Navigation correction: ensure scroll: top beforenavigate also works on main feed
-- Correct positioning channel item dropdown
 
 ### LATER
 
-- Enhance pubdate and other cols storage on idb side
 - Shuffle feed (see below)
 - i18n
 - Save subscribed rss channels to a global database - Track popularity
-- Privacy notice - About page
-- Buy me a coffee/Patreon
 - Google analytics
-- OPML compatibility
 - Enhance first landing page - easily add first rss channels.
-- LARGE RSS COMPATIBILITY TESTING (see below collected problems)
 - Add api rate limiting
 - Domain checking and validation ('extractdomain') refactor and enhancment
-- Handle old item deletion
-- 'Add new' sub -> Possibility to choos from D1 channels
+- 'Add new' sub -> Possibility to choose from D1 channels
 - Implement 'RSS Feed Finder' - If not valid xml URL, but valid page, try to find any rss link on the website and propose to user.
-- Create sharable link to import RSS collection (D1 db) - CONSTRAINTS: subbed to at least 5 channels -> cross-check with d1 to check if valid channels (to avoid
+- Create sharable link to import RSS collection (D1 db): modal -> User should be able to choose which to share from his channels - CONSTRAINTS: subbed to at least 5 channels -> cross-check with d1 to check if valid channels (to avoid
   manipulation of IDB before share) -> CHECK IF COLLECTIONS NAMES AREN'T TO LONG AND ALL OF KINDS OF STUFF LIKE THAT
 
 - Handle slow import in UI. Load list of channels, and then let user select/customize channel list before import
 - Enhance "looks like you're new here landing page.
-- Check items if paywalled (? - this probably needs to fetch each item content)
-- Separate youtube, blog, news, podcasts sections in channel lists
-- Implement deletions of oldest (and not saved) items
 - Handle feeds with no or invalid pubDate - add date '0'/current when importing?
 - Suggestion: Add items that where fetched directly, channel by channel to the feed, not in a batch
 

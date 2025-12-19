@@ -16,7 +16,7 @@ export const load: PageLoad = async ({ url, depends }) => {
 	let activeCollectionName: string | undefined;
 
 	if (channelFilter) {
-		const c = channels.find((ch) => ch.link === channelFilter);
+		const c = channels.find((ch) => ch.feedUrl === channelFilter);
 		activeChannelTitle = c?.customTitle || c?.title;
 	}
 	if (collectionFilter) {

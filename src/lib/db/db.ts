@@ -17,7 +17,7 @@ export async function getDB(): Promise<IDBPDatabase<RSSDatabase>> {
 		upgrade(db, oldversion, newVersion, transaction) {
 			// Create Channels Store
 			if (!db.objectStoreNames.contains('channels')) {
-				db.createObjectStore('channels', { keyPath: 'link' });
+				db.createObjectStore('channels', { keyPath: 'feedUrl' });
 			}
 
 			// Create Items Store
@@ -48,10 +48,20 @@ export async function getDB(): Promise<IDBPDatabase<RSSDatabase>> {
 	});
 }
 
-function getTimestamp(dateStr?: string): number {
-	if (!dateStr) return Date.now();
-	const date = new Date(dateStr);
-	return isNaN(date.getTime()) ? Date.now() : date.getTime();
+function getTimestamp(pubDate: number, isInitialLoad: boolean, existingItem?: DBItem): number {
+	if (pubDate) {
+		const date = new Date(pubDate);
+		return isNaN(date.getTime()) ? Date.now() : date.getTime();
+	}
+
+	if (existingItem) return existingItem.timestamp;
+
+	if (isInitialLoad) {
+		const now = new Date();
+		return new Date(now.getFullYear(), now.getMonth(), 1).getTime();
+	} else {
+		return Date.now();
+	}
 }
 
 export async function saveFeedToDB(feed: NormalizedRSSFeed, sourceUrl: string) {
@@ -60,14 +70,15 @@ export async function saveFeedToDB(feed: NormalizedRSSFeed, sourceUrl: string) {
 	const channelStore = tx.objectStore('channels');
 	const itemStore = tx.objectStore('items');
 
-	const channelId = feed.data.link;
+	const channelId = feed.data.feedUrl;
 	const existingChannel = await channelStore.get(channelId);
+	const isInitialLoad = !existingChannel;
 
 	// Save Channel
 	await channelStore.put({
 		...feed.data,
 		savedAt: Date.now(),
-		feedUrl: sourceUrl,
+		feedUrl: feed.data.feedUrl,
 		collectionIds: existingChannel?.collectionIds ?? [],
 		hideOnMainFeed: existingChannel?.hideOnMainFeed ?? false,
 		customTitle: existingChannel?.customTitle
@@ -80,7 +91,7 @@ export async function saveFeedToDB(feed: NormalizedRSSFeed, sourceUrl: string) {
 		const itemId = generateItemId(item, channelId);
 		const existingItem = await itemStore.get(itemId);
 
-		const timestamp = getTimestamp(item.pubDate);
+		const timestamp = getTimestamp(item.pubDate, isInitialLoad, existingItem);
 
 		if (!existingItem) {
 			hasChanges = true;
@@ -90,6 +101,7 @@ export async function saveFeedToDB(feed: NormalizedRSSFeed, sourceUrl: string) {
 				channelId: channelId,
 				savedAt: Date.now(),
 				timestamp,
+				pubDate: timestamp,
 				read: false,
 				closed: false,
 				favourite: 0,
@@ -110,7 +122,7 @@ export async function saveFeedToDB(feed: NormalizedRSSFeed, sourceUrl: string) {
 					title: item.title,
 					description: item.description,
 					link: item.link,
-					pubDate: item.pubDate,
+					pubDate: timestamp,
 					author: item.author,
 					category: item.category,
 					image: item.image,
@@ -173,7 +185,7 @@ export async function getPaginatedItems(
 		indexName = 'by-date';
 		const channels = await db.getAll('channels');
 		allowedChannelIds = new Set(
-			channels.filter((c) => c.collectionIds?.includes(filter.collectionId!)).map((c) => c.link)
+			channels.filter((c) => c.collectionIds?.includes(filter.collectionId!)).map((c) => c.feedUrl)
 		);
 	} else {
 		// Main Feed: We must fetch channels to filter out "Hide on Main Feed"
@@ -182,7 +194,7 @@ export async function getPaginatedItems(
 		const hiddenChannels = channels.filter((c) => c.hideOnMainFeed);
 
 		if (hiddenChannels.length > 0) {
-			allowedChannelIds = new Set(channels.filter((c) => !c.hideOnMainFeed).map((c) => c.link));
+			allowedChannelIds = new Set(channels.filter((c) => !c.hideOnMainFeed).map((c) => c.feedUrl));
 		}
 	}
 

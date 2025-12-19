@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { UIItem } from '$lib/types/rss';
-	import { Bookmark, MailCheck, X } from 'lucide-svelte';
+	import { Bookmark, Undo2, X } from 'lucide-svelte';
 	import { timeAgo } from '$lib/utils/dateUtils';
 	import { extractDomain } from '$lib/utils/uiUtils';
 	import { menuState } from '$lib/stores/menu.svelte';
@@ -109,7 +109,7 @@
 					class="group relative cursor-pointer rounded-full p-2 text-content opacity-50 transition hover:bg-secondary hover:text-primary"
 					title="Mark as Unread"
 				>
-					<MailCheck class="h-5 w-5" />
+					<Undo2 class="h-5 w-5" />
 				</button>
 			{/if}
 		</div>

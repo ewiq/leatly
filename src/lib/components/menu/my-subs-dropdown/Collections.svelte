@@ -132,9 +132,17 @@
 		class="flex w-full cursor-pointer items-center justify-between bg-surface px-4 py-3 transition hover:bg-secondary/50"
 	>
 		<div class="flex items-center gap-2.5">
-			<FolderOpen size={18} class="text-primary" />
-			<h3 class="text-sm font-medium tracking-widest text-content uppercase">Collections</h3>
-			<span class="text-xs text-tertiary">({collections.length})</span>
+			<div
+				class="rounded-full bg-secondary/50 p-2 text-sm font-medium text-content transition hover:bg-secondary"
+			>
+				<FolderOpen size={18} class="text-primary" />
+			</div>
+			<h3 class="text-base font-medium tracking-wider text-content">collections</h3>
+			<span
+				class="flex h-5 w-5 items-center justify-center rounded-full bg-muted/50 text-xs font-medium text-tertiary"
+			>
+				{collections.length}
+			</span>
 		</div>
 		<div class="flex items-center gap-1">
 			{#if isExpanded}

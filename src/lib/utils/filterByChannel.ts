@@ -5,7 +5,7 @@ import type { DBChannel } from '$lib/types/rss';
 
 export async function filterByChannel(channel: DBChannel) {
 	const params = new URLSearchParams();
-	params.set('channel', channel.link);
+	params.set('channel', channel.feedUrl);
 
 	await goto(`?${params.toString()}`, {});
 

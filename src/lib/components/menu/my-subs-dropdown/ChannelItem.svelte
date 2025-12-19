@@ -46,7 +46,7 @@
 	function handleStartRename() {
 		editingTitle = channel.customTitle || channel.title;
 		onSetDropdownId(null);
-		onSetEditingId(channel.link);
+		onSetEditingId(channel.feedUrl);
 	}
 
 	function handleCancelRename() {
@@ -61,7 +61,7 @@
 		}
 
 		try {
-			await updateChannelSettings(channel.link, { customTitle: editingTitle.trim() });
+			await updateChannelSettings(channel.feedUrl, { customTitle: editingTitle.trim() });
 			await invalidate('app:feed');
 		} catch (error) {
 			console.error('Failed to rename channel', error);
@@ -76,7 +76,7 @@
 		if (isDropdownOpen) {
 			onSetDropdownId(null);
 		} else {
-			onSetDropdownId(channel.link);
+			onSetDropdownId(channel.feedUrl);
 		}
 	}
 

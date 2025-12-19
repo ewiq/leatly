@@ -9,6 +9,7 @@ export interface NormalizedRSSChannel {
 	title: string;
 	description: string;
 	link: string;
+	feedUrl: string;
 	language?: string;
 	pubDate?: string;
 	lastBuildDate?: string;
@@ -30,7 +31,7 @@ export interface NormalizedRSSItem {
 	title: string;
 	description: string;
 	link: string;
-	pubDate: string;
+	pubDate: number;
 	author?: string;
 	category?: string | string[];
 	image?: string;

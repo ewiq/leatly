@@ -87,9 +87,17 @@
 		class="flex w-full shrink-0 cursor-pointer items-center justify-between px-4 py-3 transition hover:bg-secondary/50"
 	>
 		<div class="flex items-center gap-2.5">
-			<List size={18} class="text-primary" />
-			<h3 class="text-sm font-medium tracking-widest text-content uppercase">All Subs</h3>
-			<span class="text-xs text-tertiary">({subscribedChannels.length})</span>
+			<div
+				class="rounded-full bg-secondary/50 p-2 text-sm font-medium text-content transition hover:bg-secondary"
+			>
+				<List size={18} class="text-primary" />
+			</div>
+			<h3 class="text-base font-medium tracking-wider text-content">all subs</h3>
+			<span
+				class="flex h-5 w-5 items-center justify-center rounded-full bg-muted/50 text-xs font-medium text-tertiary"
+			>
+				{subscribedChannels.length}
+			</span>
 		</div>
 		<ChevronDown
 			size={20}
@@ -108,7 +116,7 @@
 						type="text"
 						bind:value={filterText}
 						placeholder="Search..."
-						class="w-full rounded-lg border border-muted bg-background py-2 pr-10 pl-10 text-sm font-light text-content placeholder:text-tertiary focus:ring-2 focus:ring-primary focus:outline-none"
+						class="w-full rounded-lg border border-muted bg-background py-2 pr-10 pl-10 text-sm font-light text-content placeholder:text-tertiary focus:ring-1 focus:ring-primary focus:outline-none"
 					/>
 					{#if filterText}
 						<button
@@ -122,15 +130,15 @@
 				</div>
 				<button
 					onclick={cycleSortMode}
-					class="flex cursor-pointer items-center rounded-lg p-2 text-content transition hover:bg-secondary hover:text-primary"
+					class="flex h-10 w-10 shrink-0 cursor-pointer items-center justify-center rounded-lg border border-muted bg-background text-content transition-all hover:bg-primary/5 hover:text-primary"
 					title="Sort: {sortMode === 'a_z' ? 'A-Z' : sortMode === 'z_a' ? 'Z-A' : 'Date'}"
 				>
 					{#if sortMode === 'a_z'}
-						<ArrowDownAZ size={20} />
+						<ArrowDownAZ size={18} />
 					{:else if sortMode === 'z_a'}
-						<ArrowDownZA size={20} />
+						<ArrowDownZA size={18} />
 					{:else if sortMode === 'date'}
-						<ClockArrowDown size={20} />
+						<ClockArrowDown size={18} />
 					{/if}
 				</button>
 			</div>
@@ -151,13 +159,15 @@
 </div>
 
 {#snippet shareButton()}
-	<div class="mt-auto shrink-0 border-t border-muted px-2 py-2">
+	<div class="mt-auto shrink-0 border-t border-muted px-4 py-3">
 		<button
 			onclick={() => {}}
-			class="m-auto flex w-full cursor-pointer items-center justify-center gap-2 rounded-lg border border-muted bg-primary/60 px-4 py-2.5 text-sm text-content transition hover:bg-secondary"
+			class="group flex w-full cursor-pointer items-center justify-center gap-2.5 rounded-lg border border-muted bg-background px-4 py-3 text-sm font-medium text-content shadow-sm transition-all hover:border-primary hover:bg-primary/5 hover:shadow"
 		>
-			<Share2 size={16} />
-			<span>Share my Leatly</span>
+			<Share2 size={16} class="transition-colors group-hover:text-primary" />
+			<span class="font-hepta text-[13px] transition-colors group-hover:text-primary"
+				>share my leatly</span
+			>
 		</button>
 	</div>
 {/snippet}

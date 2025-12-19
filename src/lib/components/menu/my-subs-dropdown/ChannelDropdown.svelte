@@ -82,7 +82,7 @@
 		event.stopPropagation();
 		const isAlreadyInCollection = channel.collectionIds?.includes(collectionId) ?? false;
 		try {
-			await toggleChannelCollection(channel.link, collectionId, !isAlreadyInCollection);
+			await toggleChannelCollection(channel.feedUrl, collectionId, !isAlreadyInCollection);
 			await invalidate('app:feed');
 		} catch (error) {
 			console.error('Failed to update collection', error);
@@ -93,7 +93,7 @@
 		event.stopPropagation();
 		try {
 			const newHideState = !channel.hideOnMainFeed;
-			await updateChannelSettings(channel.link, { hideOnMainFeed: newHideState });
+			await updateChannelSettings(channel.feedUrl, { hideOnMainFeed: newHideState });
 			await invalidate('app:feed');
 		} catch (error) {}
 		onClose();
@@ -117,9 +117,15 @@
 	async function handleUnsubscribe(event: Event) {
 		event.stopPropagation();
 		if (!confirm('Are you sure you want to remove this channel?')) return;
+
+		if (onDeletingStateChange) {
+			onDeletingStateChange(true);
+		}
+		onClose();
+
 		isDeleting = true;
 		try {
-			await deleteChannel(channel.link);
+			await deleteChannel(channel.feedUrl);
 			await invalidate('app:feed');
 			if (onChannelDeleted) await onChannelDeleted();
 			toastData.message = 'Channel removed';

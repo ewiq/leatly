@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { ChevronDown, LoaderCircle, Plus, Share2 } from 'lucide-svelte';
+	import { ChevronDown, LoaderCircle, Plus } from 'lucide-svelte';
 	import { slide } from 'svelte/transition';
 	import { tick } from 'svelte';
 	import { toastData } from '$lib/stores/toast.svelte';
@@ -31,7 +31,7 @@
 			if (result.success) {
 				const existingChannels = await getAllChannels();
 				const isDuplicate = existingChannels.some(
-					(channel) => channel.link === result.data.data.link
+					(channel) => channel.feedUrl === result.data.data.feedUrl
 				);
 
 				if (isDuplicate) {
@@ -73,8 +73,12 @@
 		class="flex w-full cursor-pointer items-center justify-between bg-surface px-4 py-3 transition hover:bg-secondary/50"
 	>
 		<div class="flex items-center gap-2.5">
-			<Plus size={18} class="text-primary" strokeWidth={2.5} />
-			<h3 class="text-sm font-medium tracking-widest text-content uppercase">Add New</h3>
+			<div
+				class="rounded-full bg-secondary/50 p-2 text-sm font-medium text-content transition hover:bg-secondary"
+			>
+				<Plus size={18} class="text-primary" strokeWidth={2.5} />
+			</div>
+			<h3 class="text-base font-medium tracking-wider text-content">add new</h3>
 		</div>
 		<ChevronDown
 			size={20}
@@ -91,7 +95,7 @@
 						type="text"
 						placeholder="https://example.com/rss"
 						bind:value={subscriptionUrl}
-						class="w-full rounded-lg border border-muted bg-background px-3 py-2.5 text-sm text-content placeholder:text-tertiary focus:ring-2 focus:ring-primary focus:outline-none"
+						class="w-full rounded-lg border border-muted bg-background px-3 py-2.5 text-sm text-content placeholder:text-tertiary focus:ring-1 focus:ring-primary focus:outline-none"
 					/>
 				</div>
 				<button
