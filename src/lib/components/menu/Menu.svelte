@@ -139,7 +139,7 @@
 			{#if menuState.isSettingsMenuOpen}
 				<div
 					bind:this={settingsDropdownRef}
-					class="left fixed top-0 right-0 z-210 mt-15 w-screen border-t border-muted bg-surface px-4 py-4 shadow-lg md:right-4 md:w-64"
+					class="left fixed top-0 right-0 z-210 mt-15 w-screen border-t border-muted bg-surface px-4 py-3 shadow-lg md:right-4 md:w-64"
 					role="menu"
 				>
 					<SettingsDropdown

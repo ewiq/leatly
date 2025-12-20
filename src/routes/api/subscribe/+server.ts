@@ -16,11 +16,11 @@ import {
 	extractDescription,
 	extractLink,
 	extractText
-} from '$lib/utils/rss-helpers';
+} from '$lib/utils/rssHelpers';
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
 import { XMLParser } from 'fast-xml-parser';
-import { fetchWebpageIcon } from '$lib/utils/icon-fetcher';
+import { fetchWebpageIcon } from '$lib/utils/iconFetcher';
 
 // --- URL Helpers ---
 
@@ -192,7 +192,9 @@ function normalizeRSSFeed(parsedData: any, feedUrl: string): NormalizedRSSFeed {
 					title: extractText(item.title),
 					description: extractDescription(item),
 					link: extractLink(item.link || item['@_about']),
-					pubDate: extractText(item.pubDate || item['dc:date'] || item.published || item.updated),
+					pubDate: extractText(
+						item.pubDate || item['a10:updated'] || item['dc:date'] || item.published || item.updated
+					),
 					author: extractText(item.author || item['dc:creator'] || item['itunes:author']),
 					category: extractCategories(item),
 					image: extractImageFromItem(item),
@@ -387,7 +389,7 @@ async function processSingleFeed(inputUrl: string): Promise<RSSFeedResponse> {
 
 		if (url.includes('youtube.com/feeds/videos.xml')) {
 			try {
-				normalizedFeed = normalizeYouTubeFeed(parsedResult);
+				normalizedFeed = normalizeYouTubeFeed(parsedResult, effectiveUrl);
 			} catch (e: any) {
 				return { success: false, error: e.message };
 			}

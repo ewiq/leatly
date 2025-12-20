@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { UIItem } from '$lib/types/rss';
-	import { Bookmark, Undo2, X } from 'lucide-svelte';
+	import { Bookmark, LoaderCircle, Undo2, X } from 'lucide-svelte';
 	import { timeAgo } from '$lib/utils/dateUtils';
 	import { extractDomain } from '$lib/utils/uiUtils';
 	import { menuState } from '$lib/stores/menu.svelte';
@@ -31,6 +31,8 @@
 		onMarkAsRead?: (itemId: string) => void;
 		onMarkAsUnread?: (itemId: string) => void;
 	} = $props();
+
+	let imageLoaded = $state(false);
 
 	let publishedDate = $derived.by(() => {
 		const date = new Date(item.pubDate);
@@ -115,8 +117,24 @@
 		</div>
 	</div>
 	{#if item.image}
-		<div class="flex h-full w-full flex-1 items-center justify-center overflow-hidden bg-muted/40">
-			<img src={item.image} alt={item.title} class="h-full w-full object-cover" loading="lazy" />
+		<div
+			class="relative flex aspect-video w-full shrink-0 items-center justify-center overflow-hidden bg-muted/40"
+		>
+			{#if !imageLoaded}
+				<div class="absolute inset-0 flex items-center justify-center">
+					<LoaderCircle class="h-8 w-8 animate-spin text-tertiary/40" />
+				</div>
+			{/if}
+
+			<img
+				src={item.image}
+				alt={item.title}
+				class="h-full w-full object-cover transition-opacity duration-500 {imageLoaded
+					? 'opacity-100'
+					: 'opacity-0'}"
+				loading="lazy"
+				onload={() => (imageLoaded = true)}
+			/>
 		</div>
 	{/if}
 	<div class="shrink-0 px-5 py-2">

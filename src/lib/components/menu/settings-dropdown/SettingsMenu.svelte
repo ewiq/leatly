@@ -56,11 +56,13 @@
 </script>
 
 <div class="flex flex-col gap-3">
-	<div
-		class="flex items-center gap-2.5 px-4 py-1 text-sm font-medium tracking-widest text-content uppercase"
-	>
-		<Settings size={18} class="text-primary" />
-		<span>Settings</span>
+	<div class="flex items-center gap-2.5">
+		<div
+			class="rounded-full bg-secondary/50 p-2 text-sm font-medium text-content transition hover:bg-secondary"
+		>
+			<Settings size={18} class="text-primary" strokeWidth={2.5} />
+		</div>
+		<h3 class="text-base font-medium tracking-wider text-content">settings</h3>
 	</div>
 
 	<div class="flex flex-col">

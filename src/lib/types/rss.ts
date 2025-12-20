@@ -31,7 +31,7 @@ export interface NormalizedRSSItem {
 	title: string;
 	description: string;
 	link: string;
-	pubDate: number;
+	pubDate: string;
 	author?: string;
 	category?: string | string[];
 	image?: string;

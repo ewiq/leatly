@@ -5,6 +5,8 @@
 	import { menuState } from '$lib/stores/menu.svelte';
 	import { page } from '$app/state';
 
+	let { channels } = $props();
+
 	const REFRESH_INTERVAL = 15 * 60 * 1000;
 	const SYNC_KEY = 'lastSync';
 
@@ -21,10 +23,9 @@
 	}
 
 	async function performSync() {
-		if (sync.isSyncing) return;
+		if (sync.isSyncing || channels.length === 0) return;
 
 		const quiet = shouldSyncQuietly();
-
 		if (!quiet) sync.isSyncing = true;
 
 		try {

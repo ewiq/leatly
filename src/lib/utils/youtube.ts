@@ -1,6 +1,6 @@
 import { channelId } from '@gonetone/get-youtube-id-by-url';
 import type { NormalizedRSSFeed, NormalizedRSSItem, YouTubeMetadata } from '$lib/types/rss';
-import { extractCategories, extractLink, extractText } from './rss-helpers';
+import { extractCategories, extractLink, extractText } from './rssHelpers';
 
 export function isYouTubeUrl(url: string): boolean {
 	return url.includes('youtube.com') || url.includes('youtu.be');
@@ -80,7 +80,7 @@ export function getYouTubeRSSUrl(channelId: string): string {
 
 // --- Normalization Logic ---
 
-export function normalizeYouTubeFeed(parsedData: any): NormalizedRSSFeed {
+export function normalizeYouTubeFeed(parsedData: any, feedUrl: string): NormalizedRSSFeed {
 	const feed = parsedData.feed;
 	if (!feed) throw new Error('Invalid YouTube RSS feed format');
 
@@ -93,6 +93,7 @@ export function normalizeYouTubeFeed(parsedData: any): NormalizedRSSFeed {
 			link: extractLink(feed.link),
 			language: extractText(feed.language),
 			pubDate: extractText(feed.published || feed.updated),
+			feedUrl: feedUrl,
 			lastBuildDate: extractText(feed.updated),
 			image: extractYouTubeImageUrl(feed)
 		},

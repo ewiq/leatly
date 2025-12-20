@@ -31,19 +31,25 @@
 	let filteredChannels = $derived.by(() => {
 		let list = [...subscribedChannels];
 		list = list.filter((c) =>
-			normalizeText(c.title)?.toLowerCase().includes(normalizeText(filterText).toLowerCase())
+			normalizeText(getChannelTitle(c))
+				?.toLowerCase()
+				.includes(normalizeText(filterText).toLowerCase())
 		);
 
 		if (sortMode === 'a_z') {
-			list.sort((a, b) => a.title.localeCompare(b.title));
+			list.sort((a, b) => getChannelTitle(a).localeCompare(getChannelTitle(b)));
 		} else if (sortMode === 'z_a') {
-			list.sort((a, b) => b.title.localeCompare(a.title));
+			list.sort((a, b) => getChannelTitle(b).localeCompare(getChannelTitle(a)));
 		} else if (sortMode === 'date') {
 			list.sort((a, b) => b.savedAt - a.savedAt);
 		}
 
 		return list;
 	});
+
+	function getChannelTitle(c: DBChannel) {
+		return c.customTitle?.trim() || c.title;
+	}
 
 	$effect(() => {
 		if (menuState.isSubsMenuOpen) {

@@ -97,7 +97,7 @@
 	<title>leatly</title>
 </svelte:head>
 
-<FeedSyncer />
+<FeedSyncer channel={data.channels} />
 
 <main class="m-0 min-h-dvh border-0 bg-background p-0">
 	<Menu {data} {handleNewSubscription} />

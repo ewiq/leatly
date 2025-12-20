@@ -1,10 +1,11 @@
 ### NEXT
 
-- Correct positioning channel item dropdown
-- UI enhance: if image, but not loaded, put a loader inside the container
+- fetch url client-side first and then only server-side if failed
+
 - Youtube oAuth to import subscribed channels
 - Privacy notice - About page
 - Handle old item deletion (but not favourited)
+- general refactor
 - OPML compatibility for imports
 
 ### BUGS

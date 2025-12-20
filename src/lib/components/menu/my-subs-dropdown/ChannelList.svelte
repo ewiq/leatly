@@ -12,7 +12,6 @@
 		onChannelDeleted?: () => Promise<void>;
 	} = $props();
 
-	// Orchestration State
 	let activeEditingId = $state<string | null>(null);
 	let activeDropdownId = $state<string | null>(null);
 
@@ -26,7 +25,7 @@
 </script>
 
 <div class="flex w-full flex-col gap-0.5">
-	{#each channels as channel (channel.title)}
+	{#each channels as channel (channel.feedUrl)}
 		<ChannelItem
 			{channel}
 			{settings}

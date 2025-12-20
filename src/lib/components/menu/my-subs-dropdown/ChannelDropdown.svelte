@@ -37,13 +37,47 @@
 
 	// Position calculation
 	let style = $state('');
+	let dropdownElement = $state<HTMLDivElement | null>(null);
+
+	// Calculate position with viewport bounds checking
+	function calculatePosition() {
+		if (!triggerElement || !dropdownElement) return;
+
+		const triggerRect = triggerElement.getBoundingClientRect();
+		const dropdownRect = dropdownElement.getBoundingClientRect();
+		const viewportHeight = window.innerHeight;
+		const dropdownHeight = dropdownRect.height || 200; // Fallback estimate
+		const dropdownWidth = 180;
+
+		// Calculate space available below and above
+		const spaceBelow = viewportHeight - triggerRect.bottom;
+		const spaceAbove = triggerRect.top;
+
+		// Determine vertical position
+		let top: number;
+		if (spaceBelow >= dropdownHeight + 4) {
+			// Enough space below - position below trigger
+			top = triggerRect.bottom + 4;
+		} else if (spaceAbove >= dropdownHeight + 4) {
+			// Not enough space below but enough above - position above trigger
+			top = triggerRect.top - dropdownHeight - 4;
+		} else {
+			// Not enough space either way - position where there's more space
+			if (spaceBelow > spaceAbove) {
+				top = triggerRect.bottom + 4;
+			} else {
+				top = triggerRect.top - dropdownHeight - 4;
+			}
+		}
+
+		// Calculate horizontal position (right-aligned to trigger)
+		const left = triggerRect.right - dropdownWidth;
+
+		style = `top: ${top}px; left: ${left}px;`;
+	}
 
 	$effect(() => {
-		if (triggerElement) {
-			const rect = triggerElement.getBoundingClientRect();
-			// Match original logic: bottom + 4, right align (subtract width)
-			style = `top: ${rect.bottom + 4}px; left: ${rect.right - 180}px;`;
-		}
+		calculatePosition();
 	});
 
 	$effect(() => {
@@ -52,10 +86,8 @@
 		}
 	});
 
-	// Click outside handler
 	function handleClickOutside(event: MouseEvent) {
 		const target = event.target as HTMLElement;
-		// Don't close if clicking inside the dropdown or the trigger button
 		if (
 			!target.closest('[data-dropdown-content]') &&
 			target !== triggerElement &&
@@ -141,6 +173,7 @@
 </script>
 
 <div
+	bind:this={dropdownElement}
 	data-dropdown-content
 	class="font-hepta fixed z-50 min-w-[180px] rounded-lg border border-muted bg-background text-xs shadow-lg"
 	{style}
