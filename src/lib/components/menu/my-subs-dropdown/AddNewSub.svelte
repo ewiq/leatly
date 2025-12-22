@@ -10,6 +10,8 @@
 	let { onSubscribe, isExpanded = false, onToggle } = $props();
 
 	let subscriptionUrl = $state('');
+	let isAuthenticating = $state(false);
+	let authWindow: Window | null = $state(null);
 
 	async function subscribe(event: Event) {
 		event.preventDefault();
@@ -65,6 +67,59 @@
 			menuState.isSubscriptionLoading = false;
 		}
 	}
+
+	function importYouTube() {
+		isAuthenticating = true;
+
+		// Open popup window
+		const width = 600;
+		const height = 700;
+		const left = window.screen.width / 2 - width / 2;
+		const top = window.screen.height / 2 - height / 2;
+
+		authWindow = window.open(
+			'/youtube/auth',
+			'YouTube Authentication',
+			`width=${width},height=${height},left=${left},top=${top},toolbar=no,menubar=no,scrollbars=yes`
+		);
+
+		// Listen for messages from popup
+		window.addEventListener('message', handleAuthMessage);
+
+		// Check if popup was closed
+		const checkClosed = setInterval(() => {
+			if (authWindow?.closed) {
+				clearInterval(checkClosed);
+				isAuthenticating = false;
+				window.removeEventListener('message', handleAuthMessage);
+			}
+		}, 1000);
+	}
+
+	function handleAuthMessage(event: MessageEvent) {
+		// Verify origin for security
+		if (event.origin !== window.location.origin) {
+			return;
+		}
+
+		if (event.data.type === 'youtube-auth-success') {
+			console.log('YouTube auth successful!');
+			console.log('Subscriptions:', event.data.subscriptions);
+
+			// Close popup
+			authWindow?.close();
+			isAuthenticating = false;
+			window.removeEventListener('message', handleAuthMessage);
+
+			// TODO: Update your UI with the subscriptions
+			// event.data.subscriptions contains the array of subscriptions
+		} else if (event.data.type === 'youtube-auth-error') {
+			console.error('YouTube auth failed:', event.data.error);
+			authWindow?.close();
+			isAuthenticating = false;
+			window.removeEventListener('message', handleAuthMessage);
+		}
+	}
 </script>
 
 <div class="border-b border-muted">
@@ -110,6 +165,18 @@
 					{/if}
 				</button>
 			</form>
+
+			<button
+				onclick={importYouTube}
+				disabled={isAuthenticating}
+				class="flex min-h-10 w-full cursor-pointer items-center justify-center rounded-lg bg-red-700 py-2.5 text-sm font-medium text-surface transition hover:bg-red-900 disabled:cursor-not-allowed disabled:opacity-50"
+			>
+				{#if isAuthenticating}
+					<LoaderCircle class="h-5 w-5 animate-spin"></LoaderCircle>
+				{:else}
+					Import my YouTube channels
+				{/if}
+			</button>
 		</div>
 	{/if}
 </div>

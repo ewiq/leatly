@@ -10,6 +10,17 @@ export function extractText(value: any): string {
 	return String(value);
 }
 
+export function parseDateToNumber(value: any): number {
+	const text = extractText(value);
+	if (!text) return 0;
+
+	const date = new Date(text);
+	const time = date.getTime();
+
+	// Return 0 if the date is invalid so logic in db.ts can handle fallbacks
+	return isNaN(time) ? 0 : time;
+}
+
 export function extractLink(linkData: any): string {
 	if (!linkData) return '';
 	if (typeof linkData === 'string') return linkData;

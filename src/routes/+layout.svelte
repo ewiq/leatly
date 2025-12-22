@@ -93,11 +93,11 @@
 <svelte:window onkeydown={handleGlobalKeydown} />
 
 <svelte:head>
-	<link rel="icon" href="/assets/logo.png" />
+	<link rel="icon" href="/logo.svg" />
 	<title>leatly</title>
 </svelte:head>
 
-<FeedSyncer channel={data.channels} />
+<FeedSyncer channels={data.channels} />
 
 <main class="m-0 min-h-dvh border-0 bg-background p-0">
 	<Menu {data} {handleNewSubscription} />

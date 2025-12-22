@@ -1,5 +1,4 @@
 <script lang="ts">
-	import Logo from '$lib/assets/logo.png';
 	import SettingsDropdown from './settings-dropdown/SettingsMenu.svelte';
 	import { ChevronDown } from 'lucide-svelte';
 	import { settings } from '$lib/stores/settings.svelte';
@@ -133,7 +132,7 @@
 				aria-label="Settings Menu"
 				aria-expanded={menuState.isSettingsMenuOpen}
 			>
-				<img src={Logo} alt="Menu" class="h-full w-full scale-75 bg-white object-cover" />
+				<img src="logo.svg" alt="Menu" class="h-full w-full scale-75 bg-white object-cover" />
 			</button>
 
 			{#if menuState.isSettingsMenuOpen}

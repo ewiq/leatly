@@ -1,9 +1,30 @@
 ### NEXT
 
-- fetch url client-side first and then only server-side if failed
+#### Reorganize subscription logic to multiple smaller components:
 
+Now everything is handled inside one massive and complicated api/subscribe/+server.ts component and associated db.ts. We need to separate logic to components where each section controls its own part. The most important separation: channel subscription and xml rss data load should be totally separate things. We now subscribe to channels again every time a sync happens.
+Also, logic should be: try first everything that is possible on the front-end, and only go to server if failed (CORS, etc.). Now everything is only done through the api/subscribe endpoint.
+
+Channel subscription: This is a compicated part.
+There are many ways the user can subscribe to channels.
+
+We have one input where user can:
+
+- Give an already valid xml rss URL.
+- Give an almost valid xml rss URL where after adding/removing www, adding https, etc, we find the correct valid xml rss URL.
+- Give a youtube channel link -> Here we first process the link to get the valid youtube xml rss URL.
+- _Todo later: User should also have the possibility to give a valid OPML generated from another feed reader app._
+- _Todo later: And we also have a 'Import my Youtube subscriptions' where user, after google oAuth2, can fetch all of his youtube channels data -> we have to convert these to valid xml links too._
+
+When all of this is done, and we finally manage to extract our VALID rss URL(s) -> then we should write our new channel with all data to the IDB. Channel subscription should therefore be atomic: happens once, and then done, no update of channel until deletion. One exeption: Collections. We should be able to add an remove collections from channels.
+
+And SEPARATELY: when channel subscription/when feed synchronization happens -> the function gets in an array of channels, and it should fetch the xml data from the URL to save new items to the IDB.
+
+- Prevent duplicates from main feed
+- Customize feedcard for YT items (add views)
 - Youtube oAuth to import subscribed channels
-- Privacy notice - About page
+- Privacy policy/Terms of service/About page
+- Reorganize SubsMenu: Collections should be part of all subs, and share my leatly constant button on bottom.
 - Handle old item deletion (but not favourited)
 - general refactor
 - OPML compatibility for imports

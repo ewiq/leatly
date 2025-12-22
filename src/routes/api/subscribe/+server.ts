@@ -15,7 +15,8 @@ import {
 	extractCategories,
 	extractDescription,
 	extractLink,
-	extractText
+	extractText,
+	parseDateToNumber
 } from '$lib/utils/rssHelpers';
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
@@ -183,7 +184,7 @@ function normalizeRSSFeed(parsedData: any, feedUrl: string): NormalizedRSSFeed {
 				link: extractLink(data.link),
 				feedUrl,
 				language: extractText(data.language),
-				pubDate: extractText(data.pubDate),
+				pubDate: parseDateToNumber(data.pubDate),
 				lastBuildDate: extractText(data.lastBuildDate),
 				image: extractImageUrl(data.image)
 			},
@@ -192,7 +193,7 @@ function normalizeRSSFeed(parsedData: any, feedUrl: string): NormalizedRSSFeed {
 					title: extractText(item.title),
 					description: extractDescription(item),
 					link: extractLink(item.link || item['@_about']),
-					pubDate: extractText(
+					pubDate: parseDateToNumber(
 						item.pubDate || item['a10:updated'] || item['dc:date'] || item.published || item.updated
 					),
 					author: extractText(item.author || item['dc:creator'] || item['itunes:author']),
@@ -215,7 +216,7 @@ function normalizeRSSFeed(parsedData: any, feedUrl: string): NormalizedRSSFeed {
 				link: extractLink(feed.link),
 				feedUrl,
 				language: extractText(feed.language),
-				pubDate: extractText(feed.published || feed.updated),
+				pubDate: parseDateToNumber(feed.published || feed.updated),
 				lastBuildDate: extractText(feed.updated),
 				image: extractImageUrl(feed.icon || feed.logo)
 			},
@@ -224,7 +225,7 @@ function normalizeRSSFeed(parsedData: any, feedUrl: string): NormalizedRSSFeed {
 					title: extractText(entry.title),
 					description: extractDescription(entry),
 					link: extractLink(entry.link),
-					pubDate: extractText(entry.published || entry.updated),
+					pubDate: parseDateToNumber(entry.published || entry.updated),
 					author: Array.isArray(entry.author)
 						? entry.author.map((a: any) => extractText(a.name)).join(', ')
 						: extractText(entry.author?.name),
@@ -249,7 +250,7 @@ function normalizeRSSFeed(parsedData: any, feedUrl: string): NormalizedRSSFeed {
 				link: extractLink(channel?.link),
 				feedUrl,
 				language: extractText(channel?.['dc:language']),
-				pubDate: extractText(channel?.['dc:date']),
+				pubDate: parseDateToNumber(channel?.['dc:date']),
 				image: extractImageUrl(channel?.image)
 			},
 			items: items.map(
@@ -257,7 +258,7 @@ function normalizeRSSFeed(parsedData: any, feedUrl: string): NormalizedRSSFeed {
 					title: extractText(item.title),
 					description: extractDescription(item),
 					link: extractLink(item.link || item['@_about']),
-					pubDate: extractText(item['dc:date']),
+					pubDate: parseDateToNumber(item['dc:date']),
 					author: extractText(item['dc:creator']),
 					category: extractCategories(item),
 					image: extractImageFromItem(item),

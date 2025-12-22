@@ -48,7 +48,7 @@ export async function getDB(): Promise<IDBPDatabase<RSSDatabase>> {
 	});
 }
 
-function getTimestamp(pubDate: string, isInitialLoad: boolean, existingItem?: DBItem): number {
+function getTimestamp(pubDate: number, isInitialLoad: boolean, existingItem?: DBItem): number {
 	if (pubDate) {
 		const date = new Date(pubDate);
 		return isNaN(date.getTime()) ? Date.now() : date.getTime();
@@ -101,7 +101,7 @@ export async function saveFeedToDB(feed: NormalizedRSSFeed, sourceUrl: string) {
 				channelId: channelId,
 				savedAt: Date.now(),
 				timestamp,
-				pubDate: timestamp.toString(),
+				pubDate: timestamp,
 				read: false,
 				closed: false,
 				favourite: 0,
@@ -122,7 +122,7 @@ export async function saveFeedToDB(feed: NormalizedRSSFeed, sourceUrl: string) {
 					title: item.title,
 					description: item.description,
 					link: item.link,
-					pubDate: timestamp.toString(),
+					pubDate: timestamp,
 					author: item.author,
 					category: item.category,
 					image: item.image,

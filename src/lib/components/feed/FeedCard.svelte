@@ -98,8 +98,10 @@
 					{item.channelTitle}
 				</span>
 				<div class="flex items-center gap-1 text-sm text-tertiary">
-					{#if item.author}
-						<span class="line-clamp-1">{item.author}</span>
+					{#if item.author && publishedDate}
+						{#if item.author && publishedDate}
+							<span class="line-clamp-1">{item.author}</span>
+						{/if}
 						<span>·</span>
 					{/if}
 					<span>{publishedDate}</span>
